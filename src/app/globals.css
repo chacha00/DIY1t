@@ -1,0 +1,115 @@
+@import "tailwindcss";
+
+:root {
+  --background: #ffffff;
+  --foreground: #0f172a;
+
+  /* DIY1T brand palette */
+  --color-blue-50: #eff8ff;
+  --color-blue-100: #dbeefe;
+  --color-blue-400: #4da3f5;
+  --color-blue-500: #2186eb;
+  --color-blue-600: #1267c4;
+  --color-blue-700: #0f519c;
+
+  --color-teal-50: #effcf9;
+  --color-teal-100: #d3f7ec;
+  --color-teal-400: #2dd4bf;
+  --color-teal-500: #14b8a6;
+  --color-teal-600: #0d9488;
+
+  --color-orange-50: #fff7ed;
+  --color-orange-100: #ffead2;
+  --color-orange-400: #ff9d4d;
+  --color-orange-500: #fb7e22;
+  --color-orange-600: #ea5e0a;
+
+  --shadow-soft: 0 2px 8px rgba(15, 23, 42, 0.04), 0 8px 24px rgba(15, 23, 42, 0.06);
+  --shadow-soft-lg: 0 8px 24px rgba(15, 23, 42, 0.08), 0 16px 48px rgba(15, 23, 42, 0.08);
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+
+  --color-brand-blue-50: var(--color-blue-50);
+  --color-brand-blue-100: var(--color-blue-100);
+  --color-brand-blue-400: var(--color-blue-400);
+  --color-brand-blue-500: var(--color-blue-500);
+  --color-brand-blue-600: var(--color-blue-600);
+  --color-brand-blue-700: var(--color-blue-700);
+
+  --color-brand-teal-50: var(--color-teal-50);
+  --color-brand-teal-100: var(--color-teal-100);
+  --color-brand-teal-400: var(--color-teal-400);
+  --color-brand-teal-500: var(--color-teal-500);
+  --color-brand-teal-600: var(--color-teal-600);
+
+  --color-brand-orange-50: var(--color-orange-50);
+  --color-brand-orange-100: var(--color-orange-100);
+  --color-brand-orange-400: var(--color-orange-400);
+  --color-brand-orange-500: var(--color-orange-500);
+  --color-brand-orange-600: var(--color-orange-600);
+
+  --font-sans: var(--font-display), ui-sans-serif, system-ui, sans-serif;
+
+  --shadow-soft: var(--shadow-soft);
+  --shadow-soft-lg: var(--shadow-soft-lg);
+
+  --animate-float: float 6s ease-in-out infinite;
+  --animate-fade-up: fade-up 0.6s ease-out forwards;
+  --animate-gradient: gradient-shift 8s ease infinite;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-12px); }
+}
+
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes gradient-shift {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans);
+}
+
+/* Glassmorphism utility */
+.glass {
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(16px) saturate(180%);
+  -webkit-backdrop-filter: blur(16px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+}
+
+.glass-dark {
+  background: rgba(15, 23, 42, 0.6);
+  backdrop-filter: blur(16px) saturate(180%);
+  -webkit-backdrop-filter: blur(16px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.brand-gradient-text {
+  background: linear-gradient(90deg, var(--color-blue-600), var(--color-teal-500) 50%, var(--color-orange-500));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.brand-gradient-bg {
+  background: linear-gradient(120deg, var(--color-blue-500), var(--color-teal-500), var(--color-orange-500));
+  background-size: 200% 200%;
+}
+
+::selection {
+  background: var(--color-teal-100);
+  color: var(--color-blue-700);
+}
