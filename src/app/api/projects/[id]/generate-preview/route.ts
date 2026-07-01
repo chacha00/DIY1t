@@ -36,15 +36,18 @@ export async function POST(_request: Request, { params }: { params: Promise<{ id
     prompt,
     n: 1,
     size: "1024x1024",
-    response_format: "b64_json",
   });
 
-  const b64 = imageResponse.data?.[0]?.b64_json;
-  if (!b64) {
+  const imageUrl = imageResponse.data?.[0]?.url;
+  if (!imageUrl) {
     return NextResponse.json({ error: "Image generation failed" }, { status: 502 });
   }
 
-  const uploaded = await uploadImageBuffer(Buffer.from(b64, "base64"), {
+  // Fetch the temporary OpenAI URL and upload to Cloudinary for permanent storage
+  const imageRes = await fetch(imageUrl);
+  const imageBuffer = Buffer.from(await imageRes.arrayBuffer());
+
+  const uploaded = await uploadImageBuffer(imageBuffer, {
     folder: `diy1t/previews/${user.id}`,
     publicIdPrefix: `${project.id}-preview`,
   });
