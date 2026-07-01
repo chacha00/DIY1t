@@ -184,7 +184,7 @@ Analyze the attached photo and generate an original DIY project inspired by it.`
     ],
     response_format: {
       type: "json_schema",
-      json_schema: { name: "diy_project", strict: true, schema: RESPONSE_SCHEMA },
+      json_schema: { name: "diy_project", strict: false, schema: RESPONSE_SCHEMA },
     },
   });
 
