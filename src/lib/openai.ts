@@ -1,5 +1,7 @@
 import OpenAI from "openai";
-import type { DifficultyLevel } from "@/types/database";
+import type { DifficultyLevel, PatternPiece, ProjectMeasurement } from "@/types/database";
+
+export type { PatternPiece, ProjectMeasurement as Measurement };
 
 let _openai: OpenAI | null = null;
 
@@ -38,6 +40,8 @@ export interface GeneratedProject {
   tools: { name: string; required: boolean }[];
   steps: { order: number; title: string; description: string }[];
   safety_warnings: string[];
+  pattern_pieces: PatternPiece[];
+  measurements: ProjectMeasurement[];
   diy_score: {
     difficulty: number;
     estimated_time_minutes: number;
@@ -121,6 +125,34 @@ const RESPONSE_SCHEMA = {
       },
     },
     safety_warnings: { type: "array", items: { type: "string" } },
+    pattern_pieces: {
+      type: "array",
+      items: {
+        type: "object",
+        additionalProperties: false,
+        required: ["name", "width_in", "height_in", "quantity"],
+        properties: {
+          name: { type: "string" },
+          width_in: { type: "number" },
+          height_in: { type: "number" },
+          quantity: { type: "integer" },
+          notes: { type: "string" },
+          shape: { type: "string", enum: ["rectangle", "square", "circle", "triangle", "custom"] },
+        },
+      },
+    },
+    measurements: {
+      type: "array",
+      items: {
+        type: "object",
+        additionalProperties: false,
+        required: ["label", "value"],
+        properties: {
+          label: { type: "string" },
+          value: { type: "string" },
+        },
+      },
+    },
     diy_score: {
       type: "object",
       additionalProperties: false,
@@ -157,7 +189,9 @@ Rules:
 - Be realistic with costs (in US cents) and time (in minutes).
 - estimated_cost_cents should be the DIY cost; retail_price_cents should be a reasonable estimate of buying an equivalent item; money_saved_cents = retail_price_cents - estimated_cost_cents (never negative).
 - Include genuine safety warnings when tools like blades, needles, glue guns, or power tools are involved.
-- Steps should be clear, numbered, and beginner-readable even for advanced projects.
+- Steps should be clear, numbered, and beginner-readable even for advanced projects. Include assembly steps — how pieces connect, join, fasten, or are sewn together.
+- pattern_pieces: List every piece that needs to be cut, shaped, or prepared. Include the name, exact dimensions in inches (width_in, height_in), how many to cut (quantity), shape type, and any notes (e.g. "cut on fold", "add 0.5in seam allowance", "mirror cut"). For circular pieces use diameter as width_in. Include ALL pieces including straps, linings, interfacing, hardware backing pieces.
+- measurements: List ALL critical measurements a builder needs: finished dimensions, seam allowances, spacing between hardware, overlap amounts, adjustment ranges, etc. Be specific and complete.
 - Respond ONLY with the structured JSON described by the schema.`;
 
 export async function generateDiyProject(input: GenerationInput): Promise<GeneratedProject> {

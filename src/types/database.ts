@@ -42,6 +42,20 @@ export interface ProjectStep {
   image_url?: string;
 }
 
+export interface PatternPiece {
+  name: string;
+  width_in: number;
+  height_in: number;
+  quantity: number;
+  notes?: string;
+  shape?: "rectangle" | "square" | "circle" | "triangle" | "custom";
+}
+
+export interface ProjectMeasurement {
+  label: string;
+  value: string;
+}
+
 export interface DiyScore {
   difficulty: number; // 1-10
   estimated_time_minutes: number;
@@ -145,6 +159,8 @@ export interface Project {
   tools: ToolItem[];
   steps: ProjectStep[];
   safety_warnings: string[];
+  pattern_pieces: PatternPiece[];
+  measurements: ProjectMeasurement[];
   diy_score: Partial<DiyScore>;
   is_favorite: boolean;
   is_archived: boolean;

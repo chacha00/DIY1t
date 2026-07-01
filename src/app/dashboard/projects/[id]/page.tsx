@@ -9,6 +9,7 @@ import { DiyScoreCard } from "@/components/projects/DiyScoreCard";
 import { ProjectActions } from "@/components/projects/ProjectActions";
 import { PublishToggle } from "@/components/projects/PublishToggle";
 import { GeneratePreviewButton } from "@/components/projects/GeneratePreviewButton";
+import { PatternAndMeasurements } from "@/components/projects/PatternAndMeasurements";
 import type { Project, SavedImage } from "@/types/database";
 
 function formatCents(cents: number | null) {
@@ -101,6 +102,10 @@ export default async function ProjectDetailPage({ params }: { params: Promise<{ 
 
       <div className="grid gap-6 lg:grid-cols-3">
         <div className="space-y-6 lg:col-span-2">
+          <PatternAndMeasurements
+            patternPieces={project.pattern_pieces ?? []}
+            measurements={project.measurements ?? []}
+          />
           <MaterialsList materials={project.materials} />
           <StepsList steps={project.steps} />
         </div>

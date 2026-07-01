@@ -132,6 +132,8 @@ export async function POST(request: Request) {
     tools: generated.tools,
     steps: generated.steps,
     safety_warnings: generated.safety_warnings,
+    pattern_pieces: generated.pattern_pieces ?? [],
+    measurements: generated.measurements ?? [],
     diy_score: generated.diy_score,
     tags: generated.tags,
     ai_model: "gpt-4o",

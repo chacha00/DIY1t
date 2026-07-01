@@ -1,5 +1,5 @@
-import { Document, Page, Text, View, Image, StyleSheet } from "@react-pdf/renderer";
-import type { Project } from "@/types/database";
+import { Document, Page, Text, View, Image, StyleSheet, Svg, Rect } from "@react-pdf/renderer";
+import type { Project, PatternPiece } from "@/types/database";
 
 const styles = StyleSheet.create({
   page: { padding: 36, fontSize: 10, fontFamily: "Helvetica", color: "#0f172a" },
@@ -43,6 +43,14 @@ const styles = StyleSheet.create({
   footer: { position: "absolute", bottom: 24, left: 36, right: 36, fontSize: 8, color: "#94a3b8", textAlign: "center" },
   checkbox: { width: 9, height: 9, border: "1pt solid #94a3b8", marginRight: 6, marginTop: 1 },
   previewImage: { width: "100%", height: 220, objectFit: "cover", borderRadius: 8, marginBottom: 16 },
+  patternGrid: { flexDirection: "row", flexWrap: "wrap", gap: 8, marginTop: 6 },
+  patternBox: { border: "1pt solid #2186eb", borderRadius: 4, padding: 6, width: 120, marginBottom: 4 },
+  patternLabel: { fontSize: 8, fontWeight: 700, marginBottom: 2 },
+  patternDim: { fontSize: 7, color: "#64748b" },
+  patternNote: { fontSize: 7, color: "#9a3412", marginTop: 2 },
+  measureRow: { flexDirection: "row", justifyContent: "space-between", paddingVertical: 3, borderBottom: "0.5pt solid #f1f5f9" },
+  measureLabel: { fontSize: 9, color: "#475569" },
+  measureValue: { fontSize: 9, fontWeight: 700, color: "#0f172a" },
 });
 
 function formatCents(cents: number | null) {
@@ -75,6 +83,39 @@ export function ProjectPdfDocument({ project, kind, previewImageUrl }: { project
 
         {previewImageUrl && (
           <Image src={previewImageUrl} style={styles.previewImage} />
+        )}
+
+        {project.measurements?.length > 0 && (
+          <>
+            <Text style={styles.sectionTitle}>Measurements</Text>
+            {project.measurements.map((m, i) => (
+              <View key={i} style={styles.measureRow}>
+                <Text style={styles.measureLabel}>{m.label}</Text>
+                <Text style={styles.measureValue}>{m.value}</Text>
+              </View>
+            ))}
+          </>
+        )}
+
+        {project.pattern_pieces?.length > 0 && (
+          <>
+            <Text style={styles.sectionTitle}>Pattern Pieces</Text>
+            <View style={styles.patternGrid}>
+              {project.pattern_pieces.map((piece: PatternPiece, i: number) => (
+                <View key={i} style={styles.patternBox}>
+                  <Svg width={100} height={50} viewBox="0 0 100 50">
+                    <Rect x={2} y={2} width={96} height={46} fill="#dbeafe" stroke="#2186eb" strokeWidth={1} rx={2} />
+                  </Svg>
+                  <Text style={styles.patternLabel}>{piece.name}</Text>
+                  <Text style={styles.patternDim}>
+                    {piece.width_in}" × {piece.height_in}" · ×{piece.quantity}
+                    {piece.shape && piece.shape !== "rectangle" ? ` (${piece.shape})` : ""}
+                  </Text>
+                  {piece.notes && <Text style={styles.patternNote}>📌 {piece.notes}</Text>}
+                </View>
+              ))}
+            </View>
+          </>
         )}
 
         <Text style={styles.sectionTitle}>Materials & Shopping List</Text>
