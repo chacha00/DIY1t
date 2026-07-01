@@ -1,10 +1,11 @@
 import { NextResponse } from "next/server";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { createClient } from "@/lib/supabase/server";
-import { generateDiyProject, generatePreviewImage } from "@/lib/openai";
-import { uploadImageBuffer } from "@/lib/cloudinary";
+import { generateDiyProject } from "@/lib/openai";
+
+export const maxDuration = 60;
 import { BUDGET_OPTIONS, SKILL_LEVELS, TIME_AVAILABLE_OPTIONS } from "@/lib/constants/project-options";
-import type { Profile, Project, Pet, Subscription, SavedImage, CreditTransaction } from "@/types/database";
+import type { Profile, Project, Pet, Subscription, CreditTransaction } from "@/types/database";
 
 function labelFor(options: readonly { label: string; value: string }[], value: string) {
   return options.find((o) => o.value === value)?.label ?? value;
@@ -105,31 +106,11 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "AI generation failed. Please try again." }, { status: 502 });
   }
 
-  // --- Optional AI preview image (best-effort; failures don't block the project) ---
-  let previewImageId: string | null = null;
-  try {
-    const previewB64 = await generatePreviewImage(generated.title);
-    const uploaded = await uploadImageBuffer(Buffer.from(previewB64, "base64"), {
-      folder: `diy1t/previews/${user.id}`,
-      publicIdPrefix: "preview",
-    });
-    const previewImagePayload: Partial<SavedImage> = {
-      user_id: user.id,
-      cloudinary_public_id: uploaded.publicId,
-      url: uploaded.url,
-      kind: "ai_preview",
-      width: uploaded.width,
-      height: uploaded.height,
-    };
-    const { data: savedPreview } = await insertRow(supabase, "saved_images", previewImagePayload)
-      .select("id")
-      .single<{ id: string }>();
-    previewImageId = savedPreview?.id ?? null;
-  } catch (err) {
-    console.error("Preview image generation failed (non-fatal)", err);
-  }
-
   // --- Persist the project ---
+  // Note: AI preview image generation (gpt-image-1) removed from this synchronous
+  // flow — it adds 30–60s and pushes past Vercel's function timeout. Can be added
+  // back as a separate async background job once the core generation is stable.
+  const previewImageId: string | null = null;
   const projectPayload: Partial<Project> = {
     user_id: user.id,
     pet_id: petId || null,
