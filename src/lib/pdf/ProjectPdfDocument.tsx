@@ -1,4 +1,4 @@
-import { Document, Page, Text, View, StyleSheet } from "@react-pdf/renderer";
+import { Document, Page, Text, View, Image, StyleSheet } from "@react-pdf/renderer";
 import type { Project } from "@/types/database";
 
 const styles = StyleSheet.create({
@@ -42,6 +42,7 @@ const styles = StyleSheet.create({
   warning: { fontSize: 9, color: "#9a3412", marginBottom: 4 },
   footer: { position: "absolute", bottom: 24, left: 36, right: 36, fontSize: 8, color: "#94a3b8", textAlign: "center" },
   checkbox: { width: 9, height: 9, border: "1pt solid #94a3b8", marginRight: 6, marginTop: 1 },
+  previewImage: { width: "100%", height: 220, objectFit: "cover", borderRadius: 8, marginBottom: 16 },
 });
 
 function formatCents(cents: number | null) {
@@ -55,7 +56,7 @@ function formatMinutes(minutes: number | null) {
   return `${(minutes / 60).toFixed(1)} hrs`;
 }
 
-export function ProjectPdfDocument({ project, kind }: { project: Project; kind: "instructions" | "shopping_list" }) {
+export function ProjectPdfDocument({ project, kind, previewImageUrl }: { project: Project; kind: "instructions" | "shopping_list"; previewImageUrl?: string | null }) {
   return (
     <Document title={project.title}>
       <Page size="A4" style={styles.page}>
@@ -71,6 +72,10 @@ export function ProjectPdfDocument({ project, kind }: { project: Project; kind: 
             )}
           </View>
         </View>
+
+        {previewImageUrl && (
+          <Image src={previewImageUrl} style={styles.previewImage} />
+        )}
 
         <Text style={styles.sectionTitle}>Materials & Shopping List</Text>
         {project.materials.map((item, i) => (

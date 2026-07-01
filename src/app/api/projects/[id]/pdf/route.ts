@@ -5,7 +5,7 @@ import { createElement } from "react";
 import { createClient } from "@/lib/supabase/server";
 import { uploadRawBuffer, getSignedDownloadUrl } from "@/lib/cloudinary";
 import { ProjectPdfDocument } from "@/lib/pdf/ProjectPdfDocument";
-import type { Project, GeneratedPdf } from "@/types/database";
+import type { Project, GeneratedPdf, SavedImage } from "@/types/database";
 
 type PdfKind = "instructions" | "shopping_list";
 
@@ -38,23 +38,38 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
     return NextResponse.json({ error: "Project not found" }, { status: 404 });
   }
 
+  // Fetch preview image URL if available
+  let previewImageUrl: string | null = null;
+  if (project.preview_image_id) {
+    const { data: previewImg } = await supabase
+      .from("saved_images")
+      .select("url")
+      .eq("id", project.preview_image_id)
+      .maybeSingle<Pick<SavedImage, "url">>();
+    previewImageUrl = previewImg?.url ?? null;
+  }
+
   // Untyped view: chaining differently-shaped Supabase calls in one function
   // defeats TS overload resolution for .insert() (see other API routes for the same pattern).
   const db = supabase as unknown as SupabaseClient;
 
-  const { data: existing } = await db
-    .from("generated_pdfs")
-    .select("cloudinary_public_id")
-    .eq("project_id", project.id)
-    .eq("kind", kind)
-    .maybeSingle<Pick<GeneratedPdf, "cloudinary_public_id">>();
+  // Only use cached PDF if the project has no preview image (once an image is added
+  // the cached PDF is deleted by generate-preview so we regenerate with the image included).
+  if (!previewImageUrl) {
+    const { data: existing } = await db
+      .from("generated_pdfs")
+      .select("cloudinary_public_id")
+      .eq("project_id", project.id)
+      .eq("kind", kind)
+      .maybeSingle<Pick<GeneratedPdf, "cloudinary_public_id">>();
 
-  if (existing?.cloudinary_public_id) {
-    return NextResponse.redirect(getSignedDownloadUrl(existing.cloudinary_public_id, "pdf"));
+    if (existing?.cloudinary_public_id) {
+      return NextResponse.redirect(getSignedDownloadUrl(existing.cloudinary_public_id, "pdf"));
+    }
   }
 
   const pdfBuffer = await renderToBuffer(
-    createElement(ProjectPdfDocument, { project, kind }) as Parameters<typeof renderToBuffer>[0]
+    createElement(ProjectPdfDocument, { project, kind, previewImageUrl }) as Parameters<typeof renderToBuffer>[0]
   );
 
   const uploaded = await uploadRawBuffer(Buffer.from(pdfBuffer), {

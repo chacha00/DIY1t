@@ -8,6 +8,7 @@ import { ToolsAndSafety } from "@/components/projects/ToolsAndSafety";
 import { DiyScoreCard } from "@/components/projects/DiyScoreCard";
 import { ProjectActions } from "@/components/projects/ProjectActions";
 import { PublishToggle } from "@/components/projects/PublishToggle";
+import { GeneratePreviewButton } from "@/components/projects/GeneratePreviewButton";
 import type { Project, SavedImage } from "@/types/database";
 
 function formatCents(cents: number | null) {
@@ -71,14 +72,25 @@ export default async function ProjectDetailPage({ params }: { params: Promise<{ 
         </div>
       </div>
 
-      {previewImageUrl && (
+      {previewImageUrl ? (
         // eslint-disable-next-line @next/next/no-img-element
         <img
           src={previewImageUrl}
           alt={project.title}
           className="aspect-video w-full rounded-3xl object-cover shadow-soft-lg"
         />
-      )}
+      ) : project.user_id === user?.id ? (
+        <div className="flex items-center gap-4 rounded-3xl border-2 border-dashed border-slate-200 bg-slate-50 px-6 py-8">
+          <div className="text-4xl">🎨</div>
+          <div>
+            <p className="text-sm font-semibold text-slate-700">No preview image yet</p>
+            <p className="mt-0.5 text-xs text-slate-400">Generate an AI image of your finished project — it&apos;ll also appear in the PDF.</p>
+          </div>
+          <div className="ml-auto">
+            <GeneratePreviewButton projectId={project.id} />
+          </div>
+        </div>
+      ) : null}
 
       <div className="flex flex-wrap items-center justify-between gap-3">
         <ProjectActions projectId={project.id} isFavorite={project.is_favorite} />
