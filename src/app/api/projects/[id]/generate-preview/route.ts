@@ -32,22 +32,18 @@ export async function POST(_request: Request, { params }: { params: Promise<{ id
   const prompt = `A clean, professional product photo of a handmade DIY ${project.build_type ?? "project"}: "${project.title}". Finished, complete, well-crafted. Neutral white background, soft studio lighting, realistic and detailed. No text or labels.`;
 
   const imageResponse = await getOpenAI().images.generate({
-    model: "dall-e-3",
+    model: "gpt-image-1",
     prompt,
     n: 1,
     size: "1024x1024",
   });
 
-  const imageUrl = imageResponse.data?.[0]?.url;
-  if (!imageUrl) {
+  const b64 = imageResponse.data?.[0]?.b64_json;
+  if (!b64) {
     return NextResponse.json({ error: "Image generation failed" }, { status: 502 });
   }
 
-  // Fetch the temporary OpenAI URL and upload to Cloudinary for permanent storage
-  const imageRes = await fetch(imageUrl);
-  const imageBuffer = Buffer.from(await imageRes.arrayBuffer());
-
-  const uploaded = await uploadImageBuffer(imageBuffer, {
+  const uploaded = await uploadImageBuffer(Buffer.from(b64, "base64"), {
     folder: `diy1t/previews/${user.id}`,
     publicIdPrefix: `${project.id}-preview`,
   });
