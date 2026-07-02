@@ -1,4 +1,4 @@
-import { Check } from "lucide-react";
+import { Check, Sparkles } from "lucide-react";
 import { Container } from "@/components/ui/Container";
 import { SectionHeading } from "@/components/ui/Container";
 import { Card } from "@/components/ui/Card";
@@ -10,31 +10,53 @@ const PLANS = [
     name: "Free",
     price: "$0",
     period: "forever",
-    features: ["3 free projects", "Basic instructions", "Standard support"],
+    description: "Try it out",
+    features: [
+      "3 complete DIY projects",
+      "Pattern pieces + measurements",
+      "Step-by-step instructions",
+      "PDF download",
+      "Pet profile (1 pet)",
+    ],
     cta: "Start Free",
+    href: "/register",
     variant: "outline" as const,
     featured: false,
   },
   {
-    name: "Unlimited Monthly",
-    price: "$19",
+    name: "DIY+",
+    price: "$9.99",
     period: "/ month",
+    description: "For active makers",
     features: [
       "Unlimited projects",
-      "Premium AI models",
-      "Printable PDFs",
-      "Priority support",
+      "All customization versions",
+      "Unlimited pet profiles",
+      "Project history & library",
+      "Shopping links on every list",
+      "Priority AI generation",
     ],
-    cta: "Go Unlimited",
+    cta: "Start DIY+",
+    href: "/pricing",
     variant: "primary" as const,
     featured: true,
   },
   {
-    name: "Credit Pack",
-    price: "$9",
-    period: "/ 5 projects",
-    features: ["Pay as you go", "No subscription", "Credits never expire"],
-    cta: "Buy Credits",
+    name: "Maker Pro",
+    price: "$24.99",
+    period: "/ month",
+    description: "For sellers & professionals",
+    features: [
+      "Everything in DIY+",
+      "Original commercial use patterns",
+      "Batch generation (5 at once)",
+      "SVG pattern exports",
+      "Pricing & profit calculator",
+      "Etsy listing helper",
+      "Affiliate revenue sharing",
+    ],
+    cta: "Go Pro",
+    href: "/pricing",
     variant: "outline" as const,
     featured: false,
   },
@@ -42,11 +64,11 @@ const PLANS = [
 
 export function PricingTeaser() {
   return (
-    <section className="py-20 sm:py-28">
+    <section id="pricing" className="bg-slate-50 py-20 sm:py-28">
       <Container>
         <SectionHeading
           eyebrow="Pricing"
-          title="Plans for every builder"
+          title="Plans for every maker"
           description="Start free, upgrade when you're ready to build without limits."
         />
 
@@ -54,44 +76,44 @@ export function PricingTeaser() {
           {PLANS.map((plan) => (
             <Card
               key={plan.name}
-              className={
-                plan.featured
-                  ? "relative border-2 border-brand-blue-500 p-8"
-                  : "p-8"
-              }
+              className={plan.featured ? "relative border-2 border-brand-blue-500 p-8" : "p-8"}
             >
               {plan.featured && (
                 <div className="absolute -top-4 left-1/2 -translate-x-1/2">
-                  <Badge color="orange">Most Popular</Badge>
+                  <Badge color="orange">
+                    <Sparkles className="h-3 w-3" />
+                    Most Popular
+                  </Badge>
                 </div>
               )}
-              <h3 className="text-lg font-bold text-slate-900">{plan.name}</h3>
+              <div>
+                <h3 className="text-lg font-bold text-slate-900">{plan.name}</h3>
+                <p className="text-xs text-slate-400">{plan.description}</p>
+              </div>
               <div className="mt-3 flex items-baseline gap-1">
-                <span className="text-4xl font-extrabold text-slate-900">
-                  {plan.price}
-                </span>
+                <span className="text-4xl font-extrabold text-slate-900">{plan.price}</span>
                 <span className="text-sm text-slate-400">{plan.period}</span>
               </div>
 
-              <ul className="mt-6 space-y-3">
+              <ul className="mt-6 space-y-2.5">
                 {plan.features.map((f) => (
-                  <li key={f} className="flex items-center gap-2 text-sm text-slate-600">
-                    <Check className="h-4 w-4 shrink-0 text-brand-teal-500" />
+                  <li key={f} className="flex items-start gap-2 text-sm text-slate-600">
+                    <Check className="mt-0.5 h-4 w-4 shrink-0 text-brand-teal-500" />
                     {f}
                   </li>
                 ))}
               </ul>
 
-              <LinkButton
-                href="/pricing"
-                variant={plan.variant}
-                className="mt-8 w-full"
-              >
+              <LinkButton href={plan.href} variant={plan.variant} className="mt-8 w-full">
                 {plan.cta}
               </LinkButton>
             </Card>
           ))}
         </div>
+
+        <p className="mt-10 text-center text-xs text-slate-400">
+          All plans include unlimited pet profiles after DIY+. Credit packs also available — buy 5 projects for $7 or 10 for $12. No subscriptions required.
+        </p>
       </Container>
     </section>
   );
