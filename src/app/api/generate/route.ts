@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import type { SupabaseClient } from "@supabase/supabase-js";
-import { createClient } from "@/lib/supabase/server";
+import { createClient, createServiceRoleClient } from "@/lib/supabase/server";
 import { generateDiyProject } from "@/lib/openai";
 
 export const maxDuration = 60;
@@ -156,10 +156,15 @@ export async function POST(request: Request) {
       reason: "project_generation",
       related_project_id: project.id,
     };
-    await insertRow(supabase, "credit_transactions", creditPayload);
+    // Use service-role client — credit_transactions has no INSERT RLS policy
+    // for the user role (to prevent self-granting credits). Service role bypasses
+    // RLS safely since this code only runs server-side.
+    const svc = createServiceRoleClient() as unknown as SupabaseClient;
+    await svc.from("credit_transactions").insert(creditPayload);
   }
 
-  await (supabase as unknown as SupabaseClient).rpc("increment_profile_stats", {
+  const svc = createServiceRoleClient() as unknown as SupabaseClient;
+  await svc.rpc("increment_profile_stats", {
     p_user_id: user.id,
     p_money_saved_cents: generated.money_saved_cents,
   });

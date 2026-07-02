@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import type { SupabaseClient } from "@supabase/supabase-js";
-import { createClient } from "@/lib/supabase/server";
+import { createClient, createServiceRoleClient } from "@/lib/supabase/server";
 import { getOpenAI } from "@/lib/openai";
 import type { Profile, Project, Subscription, CreditTransaction } from "@/types/database";
 
@@ -153,10 +153,12 @@ Respond with a JSON object containing: title, difficulty, estimated_cost_cents, 
       reason: "project_generation",
       related_project_id: newProject.id,
     };
-    await insertRow(db, "credit_transactions", creditPayload);
+    const svc = createServiceRoleClient() as unknown as SupabaseClient;
+    await svc.from("credit_transactions").insert(creditPayload);
   }
 
-  await (supabase as unknown as SupabaseClient).rpc("increment_profile_stats", {
+  const svc2 = createServiceRoleClient() as unknown as SupabaseClient;
+  await svc2.rpc("increment_profile_stats", {
     p_user_id: user.id,
     p_money_saved_cents: (generated.money_saved_cents as number) ?? 0,
   });
