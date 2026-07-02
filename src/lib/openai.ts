@@ -226,26 +226,69 @@ IMPORTANT RULES:
 - Respond ONLY with the structured JSON described by the schema`;
 
 export async function generateDiyProject(input: GenerationInput): Promise<GeneratedProject> {
-  const userPrompt = `Build type requested: ${input.buildType}
-Budget: ${input.budgetLabel}
-Skill level: ${input.skillLevel}
-Preferred materials: ${input.preferredMaterials}
-Time available: ${input.timeAvailableLabel}
-${input.petContext ? `Pet measurements: ${input.petContext}` : ""}
+  // ── Step 1: Deep visual analysis (free-form, no JSON constraint) ──────────
+  // Forcing structured JSON output while simultaneously analyzing an image
+  // causes the model to shortcut the visual reasoning. We do a free-form
+  // analysis pass first so the model can think thoroughly about what it sees.
+  const analysisPrompt = `You are a master crafter and pattern maker. Examine this photo with extreme care and provide a detailed construction analysis. Be SPECIFIC — describe exactly what you see, not what a generic version might look like.
 
-Study the attached photo carefully. Identify exactly what this item is, how it is constructed, what materials it uses, and what all its components are. Then generate a complete, high-quality DIY guide to build this SPECIFIC item — not a generic version of it. Every pattern piece, measurement, and step should match what you see in the photo.`;
+Describe in detail:
+1. WHAT IT IS: Exact item name, size estimate, intended use
+2. MATERIALS: Every material visible — specific fabric/leather/wood type, color, texture, finish, hardware metal type
+3. STRUCTURE: How many distinct pieces/panels are there? What are their approximate shapes and proportions?
+4. CONSTRUCTION METHOD: How are pieces joined — stitched (what stitch pattern?), riveted, screwed, glued, knotted, woven? Describe what you actually see.
+5. HARDWARE & CLOSURES: Every buckle, D-ring, snap, zipper, button — metal type, size estimate, placement
+6. DIMENSIONS: Estimate real-world dimensions using any reference objects in the frame. Give inch estimates for every major piece.
+7. FINISHING DETAILS: Edge treatment, topstitching lines, lining visible, interfacing, padding, pockets, embellishments
+8. ASSEMBLY ORDER: Based on what you see, what order would these pieces logically be assembled?
+
+Be as specific as possible. Use technical craft/sewing/woodworking terminology. If you can't determine something exactly, give your best estimate and say so.`;
+
+  const analysisCall = await getOpenAI().chat.completions.create({
+    model: "gpt-4o",
+    messages: [
+      {
+        role: "user",
+        content: [
+          { type: "text", text: analysisPrompt },
+          { type: "image_url", image_url: { url: input.imageUrl, detail: "high" } },
+        ],
+      },
+    ],
+    max_tokens: 1500,
+  });
+
+  const imageAnalysis = analysisCall.choices[0]?.message?.content ?? "";
+  if (!imageAnalysis) throw new Error("Image analysis failed");
+
+  // ── Step 2: Convert analysis into structured build plan ───────────────────
+  const buildPrompt = `You are DIY1T's master pattern maker. Using the detailed image analysis below, generate a complete, accurate DIY build plan for this SPECIFIC item.
+
+USER CONTEXT:
+- Build type: ${input.buildType}
+- Budget: ${input.budgetLabel}
+- Skill level: ${input.skillLevel}
+- Preferred materials: ${input.preferredMaterials}
+- Time available: ${input.timeAvailableLabel}
+${input.petContext ? `- Pet measurements: ${input.petContext}` : ""}
+
+DETAILED IMAGE ANALYSIS:
+${imageAnalysis}
+
+Using this analysis, produce a JSON build plan. Requirements:
+- title: The specific item name from the analysis (e.g. "Step-In Dog Harness with Padded Chest Plate", not "Dog Harness")
+- materials: List the exact materials identified in the analysis with accurate quantities and costs
+- steps: 12-20 highly specific assembly steps that match the construction method observed. Each step must describe what to actually do with the real materials and pieces — reference specific parts by their names. Include: how pieces attach, stitch types and lengths, hardware installation method, finishing techniques.
+- pattern_pieces: Every piece needed to cut, with dimensions derived from the size estimates in the analysis. Include seam allowances in notes. Name each piece descriptively.
+- measurements: All critical measurements from the analysis — finished size, every strap dimension, hardware spacing, overlap amounts.
+- safety_warnings: Only include genuine hazards relevant to this specific build.
+- Never reference any branded products. Create an original DIY version that closely matches what was analyzed.`;
 
   const completion = await getOpenAI().chat.completions.create({
     model: "gpt-4o",
     messages: [
       { role: "system", content: SYSTEM_PROMPT },
-      {
-        role: "user",
-        content: [
-          { type: "text", text: userPrompt },
-          { type: "image_url", image_url: { url: input.imageUrl } },
-        ],
-      },
+      { role: "user", content: buildPrompt },
     ],
     response_format: {
       type: "json_schema",
