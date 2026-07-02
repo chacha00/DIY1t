@@ -9,6 +9,7 @@ import { PetProfilesTeaser } from "@/components/landing/PetProfilesTeaser";
 import { SocialProof } from "@/components/landing/SocialProof";
 import { ComparisonTable } from "@/components/landing/ComparisonTable";
 import { PricingTeaser } from "@/components/landing/PricingTeaser";
+import { EmailCapture } from "@/components/landing/EmailCapture";
 import { CtaBanner } from "@/components/landing/CtaBanner";
 
 export default function Home() {
@@ -35,6 +36,7 @@ export default function Home() {
           </div>
         </div>
 
+        <EmailCapture />
         <CtaBanner />
       </main>
       <Footer />

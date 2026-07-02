@@ -242,6 +242,7 @@ export interface Database {
       payments: Table<Payment>;
       credit_transactions: Table<CreditTransaction>;
       public_profiles: Table<PublicProfile>;
+      email_leads: Table<{ id: string; email: string; source: string; created_at: string }>;
     };
     Views: Record<string, never>;
     Functions: {

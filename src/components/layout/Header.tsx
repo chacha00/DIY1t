@@ -8,7 +8,8 @@ import { LinkButton } from "@/components/ui/Button";
 
 const NAV_LINKS = [
   { label: "How It Works", href: "#how-it-works" },
-  { label: "Categories", href: "#categories" },
+  { label: "Examples", href: "#examples" },
+  { label: "Blog", href: "/blog" },
   { label: "Community", href: "/community" },
   { label: "Pricing", href: "/pricing" },
 ];
