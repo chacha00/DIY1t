@@ -8,9 +8,9 @@ import { PLANS } from "@/lib/constants/billing-plans";
 import type { Profile, Subscription, Payment } from "@/types/database";
 
 const PLAN_LABELS: Record<string, string> = {
-  free: "Free Plan",
-  monthly_unlimited: "Unlimited Monthly",
-  annual_unlimited: "Unlimited Annual",
+  free: "Free Plan (3 uploads/month)",
+  monthly_unlimited: "DIY+ — $9.99/month",
+  annual_unlimited: "Maker Pro — $24.99/month",
 };
 
 function formatCents(cents: number) {

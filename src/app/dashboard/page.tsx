@@ -14,9 +14,9 @@ type ProjectListRow = Pick<
 >;
 
 const PLAN_LABELS: Record<string, string> = {
-  free: "Free Plan",
-  monthly_unlimited: "Unlimited Monthly",
-  annual_unlimited: "Unlimited Annual",
+  free: "Free (3/month)",
+  monthly_unlimited: "DIY+",
+  annual_unlimited: "Maker Pro",
 };
 
 export default async function DashboardPage() {

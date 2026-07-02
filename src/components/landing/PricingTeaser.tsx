@@ -9,10 +9,10 @@ const PLANS = [
   {
     name: "Free",
     price: "$0",
-    period: "forever",
+    period: "/ month",
     description: "Try it — no card needed",
     features: [
-      "3 complete DIY projects",
+      "3 uploads per month",
       "Pattern pieces + measurements",
       "Step-by-step instructions",
       "PDF download",
