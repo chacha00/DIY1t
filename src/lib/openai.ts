@@ -481,19 +481,28 @@ Do not reference any branded products. Create an original design. Never reproduc
   const completion = await getOpenAI().chat.completions.create({
     model: "gpt-4o",
     messages: [
-      { role: "system", content: SYSTEM_PROMPT },
+      { role: "system", content: SYSTEM_PROMPT + "\n\nYou MUST respond with valid JSON only. No markdown, no code blocks, no explanation — raw JSON object only." },
       { role: "user", content: buildPrompt },
     ],
-    response_format: {
-      type: "json_schema",
-      json_schema: { name: "diy_project", strict: false, schema: RESPONSE_SCHEMA },
-    },
+    response_format: { type: "json_object" },
+    max_tokens: 4000,
   });
 
   const content = completion.choices[0]?.message?.content;
   if (!content) throw new Error("OpenAI returned no content");
 
-  return JSON.parse(content) as GeneratedProject;
+  let parsed: GeneratedProject;
+  try {
+    parsed = JSON.parse(content) as GeneratedProject;
+  } catch {
+    throw new Error(`Failed to parse AI response as JSON: ${content.slice(0, 200)}`);
+  }
+
+  if (!parsed.title || !parsed.steps?.length) {
+    throw new Error("AI response missing required fields (title or steps)");
+  }
+
+  return parsed;
 }
 
 export async function generatePreviewImage(prompt: string): Promise<string> {
