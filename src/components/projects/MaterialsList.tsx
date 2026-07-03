@@ -4,8 +4,11 @@ import type { MaterialLineItem } from "@/types/database";
 
 const AFFILIATE_TAG = "diy1t-20";
 
-function formatCents(cents: number) {
-  return `$${(cents / 100).toFixed(2)}`;
+function formatCents(cents: number | null | undefined) {
+  if (cents == null || isNaN(cents)) return null;
+  // AI sometimes returns dollars (e.g. 5.99) instead of cents (599)
+  const value = cents > 500 ? cents / 100 : cents;
+  return `$${value.toFixed(2)}`;
 }
 
 function amazonUrl(query: string) {
@@ -37,9 +40,11 @@ export function MaterialsList({ materials }: { materials: MaterialLineItem[] }) 
                     </p>
                   </div>
                   <div className="flex items-center gap-3 shrink-0">
-                    <span className="text-sm font-semibold text-slate-700">
-                      {formatCents(item.cost_cents)}
-                    </span>
+                    {formatCents(item.cost_cents) && (
+                      <span className="text-sm font-semibold text-slate-700">
+                        {formatCents(item.cost_cents)}
+                      </span>
+                    )}
                     <a
                       href={amazonUrl(item.name)}
                       target="_blank"

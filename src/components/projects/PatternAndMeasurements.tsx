@@ -77,7 +77,10 @@ export function PatternAndMeasurements({
     other: "Additional Measurements",
   };
 
-  const categoryOrder = ["fitting", "finished", "pattern", "hardware", "seam", "adjustment", "other"];
+  // Include any categories the AI returned that aren't in the standard list
+  const standardOrder = ["fitting", "finished", "pattern", "hardware", "seam", "adjustment", "other"];
+  const extraCategories = Object.keys(measurementsByCategory).filter(c => !standardOrder.includes(c));
+  const categoryOrder = [...standardOrder, ...extraCategories];
 
   return (
     <div className="space-y-6">
@@ -149,7 +152,7 @@ export function PatternAndMeasurements({
               .map((cat) => (
                 <div key={cat}>
                   <p className="mb-2 text-xs font-bold uppercase tracking-widest text-slate-400">
-                    {categoryLabels[cat] ?? cat}
+                    {categoryLabels[cat] ?? cat.replace(/_/g, " ")}
                   </p>
                   <div className="divide-y divide-slate-100 rounded-xl border border-slate-100">
                     {measurementsByCategory[cat].map((m, i) => (
