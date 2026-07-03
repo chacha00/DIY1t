@@ -107,6 +107,26 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: `AI generation failed: ${msg}` }, { status: 502 });
   }
 
+  // --- Normalize AI output ---
+  // AI sometimes returns dollar amounts instead of cents, or omits category on measurements.
+  function toCents(val: number | null | undefined): number | null {
+    if (val == null || isNaN(val)) return null;
+    return val < 500 ? Math.round(val * 100) : Math.round(val);
+  }
+
+  generated.estimated_cost_cents = toCents(generated.estimated_cost_cents) ?? 0;
+  generated.retail_price_cents = toCents(generated.retail_price_cents) ?? 0;
+  generated.money_saved_cents = toCents(generated.money_saved_cents) ?? 0;
+  generated.materials = (generated.materials ?? []).map(m => ({
+    ...m,
+    cost_cents: toCents(m.cost_cents) ?? 0,
+    alt_options: (m.alt_options ?? []).map(a => ({ ...a, cost_cents: toCents(a.cost_cents) ?? 0 })),
+  }));
+  generated.measurements = (generated.measurements ?? []).map(m => ({
+    ...m,
+    category: m.category ?? "other",
+  }));
+
   // --- Persist the project ---
   // Note: AI preview image generation (gpt-image-1) removed from this synchronous
   // flow — it adds 30–60s and pushes past Vercel's function timeout. Can be added
