@@ -4,33 +4,20 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Sparkles, Loader2, AlertCircle } from "lucide-react";
 import { Dropzone } from "@/components/upload/Dropzone";
-import { ProjectIntakeForm, type IntakeValues } from "@/components/upload/ProjectIntakeForm";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
-import type { Pet } from "@/types/database";
-
-const DEFAULT_VALUES: IntakeValues = {
-  buildType: "Pet Outfit",
-  budget: "25_50",
-  skillLevel: "easy",
-  preferredMaterials: "No preference",
-  timeAvailable: "1_3h",
-  petId: "",
-};
 
 type Stage = "idle" | "uploading" | "generating";
 
 export function NewProjectWizard({
-  pets,
   creditsRemaining,
 }: {
-  pets: Pick<Pet, "id" | "name" | "species">[];
+  pets?: unknown[];
   creditsRemaining: number;
 }) {
   const router = useRouter();
   const [file, setFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
-  const [values, setValues] = useState<IntakeValues>(DEFAULT_VALUES);
   const [stage, setStage] = useState<Stage>("idle");
   const [error, setError] = useState<string | null>(null);
 
@@ -63,12 +50,11 @@ export function NewProjectWizard({
         body: JSON.stringify({
           imageId: uploadJson.imageId,
           imageUrl: uploadJson.url,
-          buildType: values.buildType,
-          budget: values.budget,
-          skillLevel: values.skillLevel,
-          preferredMaterials: values.preferredMaterials,
-          timeAvailable: values.timeAvailable,
-          petId: values.petId || undefined,
+          buildType: "auto",
+          budget: "any",
+          skillLevel: "easy",
+          preferredMaterials: "No preference",
+          timeAvailable: "any",
         }),
       });
       const generateJson = await generateRes.json();
@@ -86,19 +72,12 @@ export function NewProjectWizard({
   return (
     <div className="space-y-6">
       <Card className="p-6">
-        <h2 className="text-base font-bold text-slate-900">1. Upload a Photo</h2>
+        <h2 className="text-base font-bold text-slate-900">Upload a Photo</h2>
         <p className="mt-1 text-sm text-slate-500">
-          Almost anything works — furniture, pet gear, decor, clothing.
+          Upload any photo — pet gear, furniture, clothing, decor. The AI will identify what it is and generate a full DIY plan.
         </p>
         <div className="mt-5">
           <Dropzone onFileSelected={handleFileSelected} />
-        </div>
-      </Card>
-
-      <Card className="p-6">
-        <h2 className="text-base font-bold text-slate-900">2. Tell Us About Your Project</h2>
-        <div className="mt-5">
-          <ProjectIntakeForm values={values} onChange={setValues} pets={pets} />
         </div>
       </Card>
 

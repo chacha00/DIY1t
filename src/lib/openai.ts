@@ -409,11 +409,11 @@ Be extremely specific and technical. Use professional craft, sewing, leatherwork
   const buildPrompt = `You are the lead product designer, master pattern maker, and DIY instructor for DIY1T. Using the expert analysis below, engineer an ORIGINAL, professionally superior DIY design inspired by the analyzed product — not a copy of it.
 
 USER CONTEXT:
-- Build type: ${input.buildType}
-- Budget: ${input.budgetLabel}
-- Skill level: ${input.skillLevel}
-- Preferred materials: ${input.preferredMaterials}
-- Time available: ${input.timeAvailableLabel}
+- Build type: Determine from the image analysis above — identify exactly what the item is and design accordingly
+- Budget: Any / use best value materials
+- Skill level: Beginner-friendly where possible
+- Preferred materials: Best choice for the project based on durability, availability, and cost
+- Time available: Any
 ${input.petContext ? `- Pet measurements: ${input.petContext}` : ""}
 
 EXPERT PRODUCT ANALYSIS:
