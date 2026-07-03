@@ -132,7 +132,7 @@ export async function POST(request: Request) {
   // flow — it adds 30–60s and pushes past Vercel's function timeout. Can be added
   // back as a separate async background job once the core generation is stable.
   const previewImageId: string | null = null;
-  const projectPayload: Partial<Project> = {
+  const projectPayload = {
     user_id: user.id,
     pet_id: petId || null,
     title: generated.title,
@@ -145,6 +145,8 @@ export async function POST(request: Request) {
     skill_level: skillLevel,
     preferred_materials: preferredMaterials,
     time_available: timeAvailable,
+    assembly_overview: generated.assembly_overview ?? null,
+    size_chart: generated.size_chart ?? [],
     estimated_cost_cents: generated.estimated_cost_cents,
     estimated_time_minutes: generated.estimated_time_minutes,
     retail_price_cents: generated.retail_price_cents,
