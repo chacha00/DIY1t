@@ -10,7 +10,9 @@ import { ProjectActions } from "@/components/projects/ProjectActions";
 import { PublishToggle } from "@/components/projects/PublishToggle";
 import { GeneratePreviewButton } from "@/components/projects/GeneratePreviewButton";
 import { PatternAndMeasurements } from "@/components/projects/PatternAndMeasurements";
+import { SizeChart } from "@/components/projects/SizeChart";
 import type { Project, SavedImage } from "@/types/database";
+import type { SizeChartRow } from "@/lib/openai";
 
 function formatCents(cents: number | null) {
   if (cents == null) return "—";
@@ -100,12 +102,22 @@ export default async function ProjectDetailPage({ params }: { params: Promise<{ 
         )}
       </div>
 
+      {(project as Project & { assembly_overview?: string }).assembly_overview && (
+        <div className="rounded-2xl border border-brand-blue-100 bg-brand-blue-50 px-6 py-4">
+          <p className="text-xs font-bold uppercase tracking-widest text-brand-blue-400">Assembly Overview</p>
+          <p className="mt-2 text-sm leading-relaxed text-brand-blue-800">
+            {(project as Project & { assembly_overview?: string }).assembly_overview}
+          </p>
+        </div>
+      )}
+
       <div className="grid gap-6 lg:grid-cols-3">
         <div className="space-y-6 lg:col-span-2">
           <PatternAndMeasurements
             patternPieces={project.pattern_pieces ?? []}
             measurements={project.measurements ?? []}
           />
+          <SizeChart rows={(project as Project & { size_chart?: SizeChartRow[] }).size_chart ?? []} />
           <MaterialsList materials={project.materials} />
           <StepsList steps={project.steps} />
         </div>

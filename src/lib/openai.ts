@@ -23,6 +23,16 @@ export interface GenerationInput {
   petContext?: string;
 }
 
+export interface SizeChartRow {
+  size_name: string;
+  breed_examples: string[];
+  chest_in: string;
+  neck_in: string;
+  back_in: string;
+  weight_lbs: string;
+  notes: string;
+}
+
 export interface GeneratedProject {
   title: string;
   difficulty: DifficultyLevel;
@@ -30,18 +40,29 @@ export interface GeneratedProject {
   estimated_time_minutes: number;
   retail_price_cents: number;
   money_saved_cents: number;
+  assembly_overview: string;
   materials: {
     name: string;
     quantity: string;
     unit?: string;
     cost_cents: number;
+    reason?: string;
     alt_options?: { label: string; cost_cents: number }[];
   }[];
   tools: { name: string; required: boolean }[];
-  steps: { order: number; title: string; description: string }[];
+  steps: {
+    order: number;
+    title: string;
+    description: string;
+    quality_checkpoint?: string;
+    common_mistake?: string;
+    pro_tip?: string;
+    time_minutes?: number;
+  }[];
   safety_warnings: string[];
   pattern_pieces: PatternPiece[];
   measurements: ProjectMeasurement[];
+  size_chart: SizeChartRow[];
   diy_score: {
     difficulty: number;
     estimated_time_minutes: number;
@@ -65,10 +86,12 @@ const RESPONSE_SCHEMA = {
     "estimated_time_minutes",
     "retail_price_cents",
     "money_saved_cents",
+    "assembly_overview",
     "materials",
     "tools",
     "steps",
     "safety_warnings",
+    "size_chart",
     "diy_score",
     "tags",
   ],
@@ -111,6 +134,7 @@ const RESPONSE_SCHEMA = {
         properties: { name: { type: "string" }, required: { type: "boolean" } },
       },
     },
+    assembly_overview: { type: "string" },
     steps: {
       type: "array",
       items: {
@@ -121,6 +145,10 @@ const RESPONSE_SCHEMA = {
           order: { type: "integer" },
           title: { type: "string" },
           description: { type: "string" },
+          quality_checkpoint: { type: "string" },
+          common_mistake: { type: "string" },
+          pro_tip: { type: "string" },
+          time_minutes: { type: "integer" },
         },
       },
     },
@@ -138,6 +166,9 @@ const RESPONSE_SCHEMA = {
           quantity: { type: "integer" },
           notes: { type: "string" },
           shape: { type: "string", enum: ["rectangle", "square", "circle", "triangle", "custom"] },
+          seam_allowance_in: { type: "number" },
+          grain_direction: { type: "string" },
+          assembly_note: { type: "string" },
         },
       },
     },
@@ -150,6 +181,24 @@ const RESPONSE_SCHEMA = {
         properties: {
           label: { type: "string" },
           value: { type: "string" },
+          category: { type: "string" },
+        },
+      },
+    },
+    size_chart: {
+      type: "array",
+      items: {
+        type: "object",
+        additionalProperties: false,
+        required: ["size_name", "breed_examples", "chest_in", "neck_in", "back_in", "weight_lbs", "notes"],
+        properties: {
+          size_name: { type: "string" },
+          breed_examples: { type: "array", items: { type: "string" } },
+          chest_in: { type: "string" },
+          neck_in: { type: "string" },
+          back_in: { type: "string" },
+          weight_lbs: { type: "string" },
+          notes: { type: "string" },
         },
       },
     },
@@ -394,9 +443,35 @@ steps: 12–20 professional assembly steps. Each step must:
   • Include professional tips that improve the result
   • Reinforce stress points with bar tacks, double stitching, or hardware backing plates
 
-pattern_pieces: Every piece to cut, named descriptively ("Padded Chest Plate — Outer Shell", not "Piece A"). Dimensions must be derived from the size analysis. Notes must include seam allowance, grain direction, interfacing requirements, and "cut 2 mirrored" where applicable.
+assembly_overview: A clear 3–5 sentence summary of the overall assembly sequence — what gets made first, what attaches to what, and how the project comes together. Written so a beginner can understand the big picture before starting.
 
-measurements: Every critical measurement — finished dimensions, all strap lengths and widths, hardware placement, seam allowances per seam, adjustment range, overlap amounts. If pet measurements were provided, scale all pattern pieces accordingly.
+pattern_pieces: Every piece to cut, named descriptively ("Padded Chest Plate — Outer Shell", not "Piece A"). For each piece include:
+  • width_in and height_in derived from the size analysis (include seam allowance in the dimension)
+  • seam_allowance_in: the seam allowance in inches (e.g. 0.625 for ⅝")
+  • grain_direction: "straight grain", "cross grain", "bias", or "any"
+  • assembly_note: which step this piece is used in and what it attaches to (e.g. "Used in Step 3 — attaches to Back Strap at shoulder junction")
+  • notes: interfacing requirements, "cut 2 mirrored", fold line notes, reinforcement zones
+
+measurements: Every critical measurement grouped by category field:
+  - category "finished": overall finished dimensions of the completed item
+  - category "pattern": every pattern piece dimension with seam allowances noted
+  - category "hardware": buckle placement, D-ring position, strap spacing
+  - category "fitting": chest girth, neck girth, back length, leg circumference
+  - category "seam": seam allowance per seam type
+  - category "adjustment": velcro overlap, buckle adjustment range, strap extension
+  If pet measurements were provided, scale ALL pattern pieces accordingly and note which measurements were customized.
+
+size_chart: A complete size reference chart with 6–8 rows covering XXS through XL (or equivalent for the animal type). For each size include:
+  • size_name: e.g. "XXS", "XS", "S", "M", "L", "XL", "XXL"
+  • breed_examples: 3–5 real breed names that typically fit this size
+  • chest_in: chest girth range in inches (e.g. "10–12")
+  • neck_in: neck girth range in inches
+  • back_in: back length range in inches
+  • weight_lbs: typical weight range in lbs
+  • notes: any fit adjustments, breed-specific considerations, or sizing tips
+  Also include a row marked "Custom" with instructions for measuring a specific pet.
+  For horse projects use different size categories (Pony, Cob, Horse, Warmblood, Draft).
+  For cat projects use (Kitten, Small Cat, Average Cat, Large Cat, Maine Coon/Large Breed).
 
 safety_warnings: Only genuine hazards for THIS specific build — hardware load limits, sharp tool warnings, material toxicity if relevant.
 
