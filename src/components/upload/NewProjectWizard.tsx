@@ -29,9 +29,15 @@ export function NewProjectWizard({
 }) {
   const router = useRouter();
   const [file, setFile] = useState<File | null>(null);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [values, setValues] = useState<IntakeValues>(DEFAULT_VALUES);
   const [stage, setStage] = useState<Stage>("idle");
   const [error, setError] = useState<string | null>(null);
+
+  function handleFileSelected(f: File) {
+    setFile(f);
+    setPreviewUrl(URL.createObjectURL(f));
+  }
 
   const noCredits = creditsRemaining <= 0;
 
@@ -85,7 +91,7 @@ export function NewProjectWizard({
           Almost anything works — furniture, pet gear, decor, clothing.
         </p>
         <div className="mt-5">
-          <Dropzone onFileSelected={setFile} />
+          <Dropzone onFileSelected={handleFileSelected} />
         </div>
       </Card>
 
@@ -95,6 +101,25 @@ export function NewProjectWizard({
           <ProjectIntakeForm values={values} onChange={setValues} pets={pets} />
         </div>
       </Card>
+
+      {isBusy && previewUrl && (
+        <div className="flex items-center gap-4 rounded-2xl border border-brand-blue-100 bg-brand-blue-50 px-4 py-3">
+          <img
+            src={previewUrl}
+            alt="Uploaded photo"
+            className="h-16 w-16 rounded-xl object-cover shadow-soft shrink-0"
+          />
+          <div>
+            <p className="text-sm font-semibold text-brand-blue-800">
+              {stage === "uploading" ? "Uploading your photo…" : "AI is analyzing your photo…"}
+            </p>
+            <p className="mt-0.5 text-xs text-brand-blue-500">
+              {stage === "generating" ? "This takes 20–40 seconds. Hang tight!" : "Almost there…"}
+            </p>
+          </div>
+          <Loader2 className="ml-auto h-5 w-5 animate-spin text-brand-blue-400 shrink-0" />
+        </div>
+      )}
 
       {error && (
         <div className="flex items-center gap-2 rounded-2xl bg-red-50 px-4 py-3 text-sm font-medium text-red-600">
