@@ -122,7 +122,8 @@ export async function POST(request: Request) {
     cost_cents: toCents(m.cost_cents) ?? 0,
     alt_options: (m.alt_options ?? []).map(a => ({ ...a, cost_cents: toCents(a.cost_cents) ?? 0 })),
   }));
-  generated.measurements = (generated.measurements ?? []).map(m => ({
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  generated.measurements = (generated.measurements ?? []).map((m: any) => ({
     ...m,
     category: m.category ?? "other",
   }));
