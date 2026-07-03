@@ -12,6 +12,9 @@ export const metadata: Metadata = {
   title: "DIY1T — See It. Build It. Make It Yourself.",
   description:
     "Upload a photo of almost anything and get an AI-generated DIY guide complete with materials, costs, instructions, and a printable shopping list.",
+  verification: {
+    google: "akXD1GZDf9ixsTfaOcoP92CwpEUO3KFW7JK7OVeQbIA",
+  },
 };
 
 export default function RootLayout({
