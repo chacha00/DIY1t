@@ -102,8 +102,9 @@ export async function POST(request: Request) {
       petContext,
     });
   } catch (err) {
-    console.error("AI generation failed", err);
-    return NextResponse.json({ error: "AI generation failed. Please try again." }, { status: 502 });
+    const msg = err instanceof Error ? err.message : String(err);
+    console.error("AI generation failed", msg);
+    return NextResponse.json({ error: `AI generation failed: ${msg}` }, { status: 502 });
   }
 
   // --- Persist the project ---
