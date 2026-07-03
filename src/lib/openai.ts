@@ -113,6 +113,7 @@ const RESPONSE_SCHEMA = {
           quantity: { type: "string" },
           unit: { type: "string" },
           cost_cents: { type: "integer" },
+          reason: { type: "string" },
           alt_options: {
             type: "array",
             items: {

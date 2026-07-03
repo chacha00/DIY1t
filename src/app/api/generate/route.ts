@@ -3,7 +3,7 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import { createClient, createServiceRoleClient } from "@/lib/supabase/server";
 import { generateDiyProject } from "@/lib/openai";
 
-export const maxDuration = 60;
+export const maxDuration = 300;
 import { BUDGET_OPTIONS, SKILL_LEVELS, TIME_AVAILABLE_OPTIONS } from "@/lib/constants/project-options";
 import type { Profile, Project, Pet, Subscription, CreditTransaction } from "@/types/database";
 
