@@ -399,7 +399,7 @@ Be extremely specific and technical. Use professional craft, sewing, leatherwork
         ],
       },
     ],
-    max_tokens: 2500,
+    max_tokens: 1500,
   });
 
   const imageAnalysis = analysisCall.choices[0]?.message?.content ?? "";
@@ -485,17 +485,19 @@ Do not reference any branded products. Create an original design. Never reproduc
       { role: "user", content: buildPrompt },
     ],
     response_format: { type: "json_object" },
-    max_tokens: 4000,
+    max_tokens: 6000,
   });
 
-  const content = completion.choices[0]?.message?.content;
+  const choice = completion.choices[0];
+  const content = choice?.message?.content;
   if (!content) throw new Error("OpenAI returned no content");
+  if (choice?.finish_reason === "length") throw new Error("AI response was cut off — try a simpler image or project type");
 
   let parsed: GeneratedProject;
   try {
     parsed = JSON.parse(content) as GeneratedProject;
   } catch {
-    throw new Error(`Failed to parse AI response as JSON: ${content.slice(0, 200)}`);
+    throw new Error(`Failed to parse AI response as JSON: ${content.slice(0, 300)}`);
   }
 
   if (!parsed.title || !parsed.steps?.length) {
