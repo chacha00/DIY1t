@@ -5,10 +5,8 @@ import type { MaterialLineItem } from "@/types/database";
 const AFFILIATE_TAG = "diy1t-20";
 
 function formatCents(cents: number | null | undefined) {
-  if (cents == null || isNaN(cents)) return null;
-  // AI sometimes returns dollars (e.g. 5.99) instead of cents (599)
-  const value = cents > 500 ? cents / 100 : cents;
-  return `$${value.toFixed(2)}`;
+  if (cents == null || isNaN(cents) || cents === 0) return null;
+  return `$${(cents / 100).toFixed(2)}`;
 }
 
 function amazonUrl(query: string) {
