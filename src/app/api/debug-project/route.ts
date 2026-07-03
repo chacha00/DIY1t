@@ -18,7 +18,7 @@ export async function GET() {
     .eq("user_id", user.id)
     .order("created_at", { ascending: false })
     .limit(1)
-    .maybeSingle();
+    .maybeSingle() as { data: Record<string, unknown> | null; error: unknown };
 
   if (error) return new Response(`ERROR: ${error.message}`, { status: 500, headers: { "Content-Type": "text/plain" } });
   if (!data) return new Response("No projects found yet", { status: 200, headers: { "Content-Type": "text/plain" } });
