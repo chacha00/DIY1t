@@ -80,11 +80,12 @@ export interface GeneratedProject {
 export async function generateDiyProject(input: GenerationInput): Promise<GeneratedProject> {
   const prompt = `You are a professional DIY instructor specializing in sewing, knitting, and crochet. Analyze this photo and create a complete DIY build plan matched to the construction method visible in the image.
 
-CONSTRUCTION METHOD RULES — detect from the photo and follow strictly:
-- SEWN or NO-SEW item (fabric, webbing, canvas, fleece, leather, felt, foam): produce sewing/no-sew instructions with pattern pieces and cut dimensions.
-- KNITTED item (visible knit stitches, stockinette, ribbing, cables): produce full knitting instructions written row by row for each piece — cast on count, stitch pattern per row, increases/decreases, bind off. List yarn weight, needle size, gauge.
-- CROCHETED item (visible crochet stitches, chains, granny squares): produce full crochet instructions written round by round or row by row for each piece — starting chain or magic ring, stitch count per row/round, increases/decreases, fasten off. List yarn weight, hook size, gauge.
-- NEVER mix methods. Match exactly what is shown in the photo.
+CONSTRUCTION METHOD RULES — determine ONLY from visually examining the image, never from the filename or any text. Look at the actual texture, stitches, and material visible in the photo:
+- SEWN or NO-SEW (smooth woven fabric, canvas, nylon webbing, fleece, leather, felt, foam — no visible individual stitches in the material itself): produce sewing/no-sew instructions with pattern pieces and cut dimensions.
+- KNITTED (you can see individual V-shaped knit stitches, stockinette texture, ribbing, or cable patterns in the fabric): produce full knitting instructions written row by row — cast on count, stitch pattern per row, increases/decreases, bind off. List yarn weight, needle size, gauge.
+- CROCHETED (you can see interlocking loops, chain stitches, granny squares, or the characteristic bumpy crochet texture): produce full crochet instructions written round by round or row by row — starting chain or magic ring, stitch counts, increases/decreases, fasten off. List yarn weight, hook size, gauge.
+- NEVER infer the method from the filename, product name, or assumptions — base it entirely on what the material visually looks like in the photo.
+- NEVER mix methods. Match exactly what is shown.
 ${input.petContext ? `Pet measurements: ${input.petContext}.` : ""}
 
 Respond with ONLY a raw JSON object (no markdown, no code blocks) with these exact fields:
