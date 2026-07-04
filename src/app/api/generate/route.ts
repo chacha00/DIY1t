@@ -109,10 +109,16 @@ export async function POST(request: Request) {
   }
 
   // --- Normalize AI output ---
-  // AI sometimes returns dollar amounts instead of cents, or omits category on measurements.
-  function toCents(val: number | null | undefined): number | null {
+  // The prompt asks for cents, but the AI occasionally returns dollars (e.g. 8 instead of 800).
+  // Heuristic: if the value is a small decimal or whole number under 150, treat as dollars and
+  // multiply by 100. Values >= 150 are already cents. Cap individual materials at $150 (15000 cents).
+  function toCents(val: number | null | undefined, cap = 1500000): number | null {
     if (val == null || isNaN(val)) return null;
-    return val < 500 ? Math.round(val * 100) : Math.round(val);
+    const cents = val < 150 ? Math.round(val * 100) : Math.round(val);
+    return Math.min(cents, cap);
+  }
+  function materialToCents(val: number | null | undefined): number | null {
+    return toCents(val, 15000); // cap single material at $150
   }
 
   generated.estimated_cost_cents = toCents(generated.estimated_cost_cents) ?? 0;
@@ -120,8 +126,8 @@ export async function POST(request: Request) {
   generated.money_saved_cents = toCents(generated.money_saved_cents) ?? 0;
   generated.materials = (generated.materials ?? []).map(m => ({
     ...m,
-    cost_cents: toCents(m.cost_cents) ?? 0,
-    alt_options: (m.alt_options ?? []).map(a => ({ ...a, cost_cents: toCents(a.cost_cents) ?? 0 })),
+    cost_cents: materialToCents(m.cost_cents) ?? 0,
+    alt_options: (m.alt_options ?? []).map(a => ({ ...a, cost_cents: materialToCents(a.cost_cents) ?? 0 })),
   }));
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   generated.measurements = (generated.measurements ?? []).map((m: any) => ({

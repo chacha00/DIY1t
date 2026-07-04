@@ -100,7 +100,15 @@ Respond with ONLY a raw JSON object (no markdown, no code blocks) with these exa
   "tags": ["string"]
 }
 
-Use realistic US dollar amounts in CENTS (e.g. $5.99 = 599). Include 6-10 materials, 8-12 steps, 3-5 pattern pieces, 8-12 measurements, and 5-7 size chart rows.`;
+PRICING RULES — this is a budget DIY app, keep costs realistic and affordable:
+- All monetary values must be in CENTS (e.g. $5.99 = 599, $12.00 = 1200)
+- Individual materials: typically $1–$20 each (thread $299, fabric per yard $799, buckles $399, webbing $699)
+- Total project cost: $5–$40 for simple items, $15–$80 for complex ones
+- retail_price_cents: what the finished item sells for in a store (typically 3–5x the DIY cost)
+- money_saved_cents = retail_price_cents minus estimated_cost_cents (never negative)
+- Do NOT return dollar amounts — return CENTS only
+
+Include 6-10 materials, 8-12 steps, 3-5 pattern pieces, 8-12 measurements, and 5-7 size chart rows.`;
 
   const completion = await getOpenAI().chat.completions.create({
     model: "gpt-4o",
