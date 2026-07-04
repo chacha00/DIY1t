@@ -91,8 +91,8 @@ export function Hero() {
                 <p className="mb-3 text-xs font-bold uppercase tracking-widest text-slate-400">Your Photo</p>
                 <div className="relative overflow-hidden rounded-2xl">
                   <Image
-                    src="https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=600&q=80"
-                    alt="Golden retriever wearing a harness"
+                    src="/images/harness3.jpg"
+                    alt="Chocolate Labradoodle wearing a black padded vest harness"
                     width={600}
                     height={400}
                     className="w-full object-cover"
@@ -100,7 +100,7 @@ export function Hero() {
                   />
                   <div className="absolute inset-0 flex items-end bg-gradient-to-t from-black/40 to-transparent p-4">
                     <span className="rounded-full bg-white/90 px-3 py-1 text-xs font-semibold text-slate-700">
-                      📸 Uploaded: dog-harness.jpg
+                      📸 Uploaded: dog-harness3.jpg
                     </span>
                   </div>
                 </div>
@@ -112,7 +112,7 @@ export function Hero() {
                     <span className="h-2 w-2 rounded-full bg-brand-blue-400 animate-bounce [animation-delay:150ms]" />
                     <span className="h-2 w-2 rounded-full bg-brand-blue-400 animate-bounce [animation-delay:300ms]" />
                   </div>
-                  <p className="text-xs font-medium text-brand-blue-600">AI analyzing harness construction, materials &amp; stitching…</p>
+                  <p className="text-xs font-medium text-brand-blue-600">AI analyzing padded vest harness, webbing straps &amp; D-ring placement…</p>
                 </div>
               </div>
 
@@ -124,26 +124,23 @@ export function Hero() {
                 <div className="relative overflow-hidden rounded-2xl bg-amber-50 border border-amber-100 p-4">
                   {/* Fake pattern lines */}
                   <div className="mb-2 flex items-center justify-between">
-                    <span className="text-xs font-bold text-slate-600">Pattern Pieces — Corgi Harness</span>
+                    <span className="text-xs font-bold text-slate-600">Pattern Pieces — Padded Vest Harness</span>
                     <span className="rounded bg-brand-teal-100 px-2 py-0.5 text-xs font-semibold text-brand-teal-700">PDF Ready</span>
                   </div>
                   <svg viewBox="0 0 280 140" className="w-full" xmlns="http://www.w3.org/2000/svg">
                     {/* Chest panel */}
                     <rect x="10" y="10" width="110" height="70" rx="8" fill="none" stroke="#1267c4" strokeWidth="1.5" strokeDasharray="4 2"/>
-                    <text x="65" y="42" textAnchor="middle" fontSize="9" fill="#1267c4" fontWeight="600">CHEST PANEL</text>
-                    <text x="65" y="55" textAnchor="middle" fontSize="7.5" fill="#64748b">Cut 2 — 11" × 7"</text>
-                    {/* Arrow */}
-                    <line x1="20" y1="50" x2="10" y2="50" stroke="#94a3b8" strokeWidth="1"/>
-                    <line x1="20" y1="45" x2="20" y2="55" stroke="#94a3b8" strokeWidth="1"/>
-                    <text x="22" y="53" fontSize="6" fill="#94a3b8">7"</text>
-                    {/* Back strap */}
+                    <text x="65" y="38" textAnchor="middle" fontSize="9" fill="#1267c4" fontWeight="600">CHEST VEST</text>
+                    <text x="65" y="50" textAnchor="middle" fontSize="7.5" fill="#64748b">Cut 2 — 12" × 8"</text>
+                    <text x="65" y="62" textAnchor="middle" fontSize="7" fill="#94a3b8">Padded mesh + lining</text>
+                    {/* Shoulder strap */}
                     <rect x="135" y="15" width="130" height="35" rx="6" fill="none" stroke="#0d9488" strokeWidth="1.5" strokeDasharray="4 2"/>
-                    <text x="200" y="30" textAnchor="middle" fontSize="9" fill="#0d9488" fontWeight="600">BACK STRAP</text>
-                    <text x="200" y="42" textAnchor="middle" fontSize="7.5" fill="#64748b">Cut 1 — 13" × 3.5"</text>
-                    {/* Belly band */}
+                    <text x="200" y="30" textAnchor="middle" fontSize="9" fill="#0d9488" fontWeight="600">SHOULDER STRAP</text>
+                    <text x="200" y="42" textAnchor="middle" fontSize="7.5" fill="#64748b">Cut 2 — 14" × 1.5"</text>
+                    {/* Belly strap */}
                     <rect x="135" y="65" width="130" height="28" rx="6" fill="none" stroke="#fb7e22" strokeWidth="1.5" strokeDasharray="4 2"/>
-                    <text x="200" y="81" textAnchor="middle" fontSize="9" fill="#fb7e22" fontWeight="600">BELLY BAND</text>
-                    <text x="200" y="91" textAnchor="middle" fontSize="7.5" fill="#64748b">Cut 1 — 13" × 2.5"</text>
+                    <text x="200" y="81" textAnchor="middle" fontSize="9" fill="#fb7e22" fontWeight="600">BELLY STRAP</text>
+                    <text x="200" y="91" textAnchor="middle" fontSize="7.5" fill="#64748b">Cut 1 — 13" × 1.5"</text>
                     {/* Seam allowance note */}
                     <text x="10" y="125" fontSize="6.5" fill="#94a3b8">* All seam allowances ⅝" unless noted</text>
                     <text x="10" y="135" fontSize="6.5" fill="#94a3b8">* Scale to print at 100% — do not resize</text>
@@ -153,10 +150,10 @@ export function Hero() {
                 {/* Materials strip */}
                 <div className="mt-3 grid grid-cols-2 gap-2">
                   {[
-                    { label: "1.5\" nylon webbing", cost: "$3.20" },
+                    { label: "Black padded mesh fabric", cost: "$6.50" },
+                    { label: "1.5\" gray nylon webbing", cost: "$3.20" },
                     { label: "Side-release buckles ×2", cost: "$2.80" },
-                    { label: "Fleece lining ¼ yd", cost: "$4.50" },
-                    { label: "D-ring + thread", cost: "$3.00" },
+                    { label: "Front D-ring + thread", cost: "$2.00" },
                   ].map((m) => (
                     <div key={m.label} className="flex items-center justify-between rounded-lg bg-slate-50 px-3 py-2 text-xs">
                       <span className="text-slate-600">{m.label}</span>
@@ -169,7 +166,7 @@ export function Hero() {
                 <div className="mt-3 flex items-center justify-between rounded-xl bg-brand-teal-50 px-4 py-3">
                   <div>
                     <p className="text-xs font-semibold text-brand-teal-600">Total DIY Cost</p>
-                    <p className="text-lg font-extrabold text-brand-teal-700">$13.50</p>
+                    <p className="text-lg font-extrabold text-brand-teal-700">$14.50</p>
                   </div>
                   <div className="text-right">
                     <p className="text-xs text-slate-400">Retail price</p>
