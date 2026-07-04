@@ -8,11 +8,11 @@ const EXAMPLES = [
   {
     label: "Dog Harness",
     product: "Store-bought step-in harness · $65 retail",
-    result: "Padded Corgi Step-In Harness",
+    result: "Padded Step-In Dog Harness",
     photoSrc: "/images/harness.jpg",
-    photoAlt: "Black dog wearing a blue harness",
+    photoAlt: "Dog wearing a step-in harness",
     finishedSrc: "/images/harness2.jpg",
-    finishedAlt: "Dog wearing a harness",
+    finishedAlt: "Dog wearing a handmade padded harness",
     patternColor: "border-brand-blue-300 bg-brand-blue-50",
     patternTextColor: "text-brand-blue-600",
     materials: ["1.5\" nylon webbing (2 yds)", "Side-release buckles ×2", "Fleece lining ¼ yd", "D-ring + thread"],
@@ -20,7 +20,11 @@ const EXAMPLES = [
     cost: "$14",
     retail: "$65",
     savings: "79%",
-    step: "Cut two chest panels on fold, sew right sides together. Attach webbing through D-ring. Thread buckles at shoulders. Top-stitch all edges.",
+    pieces: [
+      { label: "CHEST PANEL", sub: "Cut 2 on fold", dim: "11\" × 7\"", x: 5, y: 5, w: 90, h: 55 },
+      { label: "BELLY STRAP", sub: "Cut 1", dim: "13\" × 3.5\"", x: 108, y: 5, w: 107, h: 30 },
+      { label: "NECK STRAP", sub: "Cut 1", dim: "13\" × 2.5\"", x: 108, y: 45, w: 107, h: 25 },
+    ],
   },
   {
     label: "Dog Bed",
@@ -37,14 +41,18 @@ const EXAMPLES = [
     cost: "$28",
     retail: "$95",
     savings: "71%",
-    step: "Cut base 28\"×40\", four bolster strips 8\"×28\". Sew bolsters into tube, stuff. Attach to base. Install zipper on bottom for removable insert.",
+    pieces: [
+      { label: "BED BASE", sub: "Cut 1", dim: "28\" × 40\"", x: 5, y: 5, w: 120, h: 55 },
+      { label: "BOLSTER", sub: "Cut 4", dim: "8\" × 28\"", x: 138, y: 5, w: 77, h: 30 },
+      { label: "ZIPPER FLAP", sub: "Cut 1", dim: "4\" × 28\"", x: 138, y: 45, w: 77, h: 25 },
+    ],
   },
   {
     label: "Dog Sweater",
     product: "Cable-knit dog sweater · $42 retail",
     result: "Ribbed Knit Dog Pullover",
     photoSrc: "/images/sweater.jpg",
-    photoAlt: "French bulldog in a black and gold hoodie sweater",
+    photoAlt: "French bulldog in a striped sweater",
     finishedSrc: "/images/sweater2.jpg",
     finishedAlt: "Dog wearing a handmade knit sweater",
     patternColor: "border-brand-teal-300 bg-brand-teal-50",
@@ -54,26 +62,30 @@ const EXAMPLES = [
     cost: "$12",
     retail: "$42",
     savings: "71%",
-    step: "CO 44 sts. Work 2×2 rib for 3\". Inc to 56 sts for body. Work 6\" stockinette. Divide for leg holes, rejoin and work neck ribbing.",
+    pieces: [
+      { label: "BODY", sub: "Knit 1", dim: "14\" × 10\"", x: 5, y: 5, w: 100, h: 55 },
+      { label: "NECKBAND", sub: "Knit 1", dim: "12\" × 3\"", x: 118, y: 5, w: 97, h: 28 },
+      { label: "LEG BAND", sub: "Knit 2", dim: "6\" × 2\"", x: 118, y: 43, w: 97, h: 27 },
+    ],
   },
 ];
 
-function PatternPreview({ color, textColor }: { color: string; textColor: string }) {
+type Piece = { label: string; sub: string; dim: string; x: number; y: number; w: number; h: number };
+
+function PatternPreview({ color, textColor, pieces }: { color: string; textColor: string; pieces: Piece[] }) {
   return (
     <div className={`rounded-2xl border-2 border-dashed p-4 ${color}`}>
       <p className={`mb-2 text-xs font-bold uppercase tracking-widest ${textColor}`}>Pattern Pieces</p>
       <svg viewBox="0 0 220 100" className="w-full" xmlns="http://www.w3.org/2000/svg">
-        <rect x="5" y="5" width="90" height="55" rx="6" fill="white" stroke="currentColor" strokeWidth="1.5" strokeDasharray="4 2" className={textColor} />
-        <text x="50" y="30" textAnchor="middle" fontSize="8" fill="#64748b" fontWeight="600">MAIN PANEL</text>
-        <text x="50" y="42" textAnchor="middle" fontSize="7" fill="#94a3b8">Cut 2 on fold</text>
-        <text x="50" y="52" textAnchor="middle" fontSize="7" fill="#94a3b8">11" × 7"</text>
-        <rect x="108" y="5" width="107" height="30" rx="5" fill="white" stroke="currentColor" strokeWidth="1.5" strokeDasharray="4 2" className={textColor}/>
-        <text x="161" y="18" textAnchor="middle" fontSize="8" fill="#64748b" fontWeight="600">STRAP A</text>
-        <text x="161" y="28" textAnchor="middle" fontSize="7" fill="#94a3b8">13" × 3.5"</text>
-        <rect x="108" y="45" width="107" height="25" rx="5" fill="white" stroke="currentColor" strokeWidth="1.5" strokeDasharray="4 2" className={textColor}/>
-        <text x="161" y="60" textAnchor="middle" fontSize="8" fill="#64748b" fontWeight="600">STRAP B</text>
-        <text x="161" y="70" textAnchor="middle" fontSize="7" fill="#94a3b8">13" × 2.5"</text>
-        <text x="5" y="92" fontSize="6" fill="#94a3b8">* Seam allowance ⅝" · Print at 100%</text>
+        {pieces.map((p) => (
+          <g key={p.label}>
+            <rect x={p.x} y={p.y} width={p.w} height={p.h} rx="5" fill="white" stroke="currentColor" strokeWidth="1.5" strokeDasharray="4 2" className={textColor} />
+            <text x={p.x + p.w / 2} y={p.y + p.h / 2 - 8} textAnchor="middle" fontSize="8" fill="#64748b" fontWeight="600">{p.label}</text>
+            <text x={p.x + p.w / 2} y={p.y + p.h / 2 + 3} textAnchor="middle" fontSize="7" fill="#94a3b8">{p.sub}</text>
+            <text x={p.x + p.w / 2} y={p.y + p.h / 2 + 12} textAnchor="middle" fontSize="7" fill="#94a3b8">{p.dim}</text>
+          </g>
+        ))}
+        <text x="5" y="96" fontSize="6" fill="#94a3b8">* Seam allowance ⅝" · Print at 100%</text>
       </svg>
     </div>
   );
@@ -127,7 +139,7 @@ export function Examples() {
                     <span className="flex h-5 w-5 items-center justify-center rounded-full bg-brand-blue-500 text-[10px] font-bold text-white">2</span>
                     AI Generates
                   </p>
-                  <PatternPreview color={ex.patternColor} textColor={ex.patternTextColor} />
+                  <PatternPreview color={ex.patternColor} textColor={ex.patternTextColor} pieces={ex.pieces} />
                   <div className="mt-3 space-y-1.5">
                     {ex.materials.map((m) => (
                       <div key={m} className="flex items-center gap-2 text-xs text-slate-600">
