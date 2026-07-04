@@ -36,6 +36,10 @@ yarn-error.log*
 # vercel
 .vercel
 
+# capacitor native builds (rebuilt locally with npx cap sync)
+/android
+/ios
+
 # claude code session data (contains memory/keys — never commit)
 .claude/
 
