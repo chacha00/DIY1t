@@ -78,12 +78,13 @@ export interface GeneratedProject {
 
 
 export async function generateDiyProject(input: GenerationInput): Promise<GeneratedProject> {
-  const prompt = `You are a professional DIY sewing instructor. Analyze this photo and create a complete DIY build plan to make a similar item from scratch using SEWING or NO-SEW techniques only.
+  const prompt = `You are a professional DIY instructor specializing in sewing, knitting, and crochet. Analyze this photo and create a complete DIY build plan matched to the construction method visible in the image.
 
-IMPORTANT RULES:
-- Only generate SEWING or NO-SEW projects. Use fabric, webbing, fleece, canvas, leather, felt, foam, or similar materials.
-- NEVER suggest knitting, crocheting, or yarn-based construction. If the photo shows a knitted or crocheted item, design a sewn fabric equivalent instead (e.g. a knit sweater becomes a fleece pullover).
-- All steps must be sewing machine or hand-sewing instructions, or no-sew adhesive/iron-on methods.
+CONSTRUCTION METHOD RULES — detect from the photo and follow strictly:
+- SEWN or NO-SEW item (fabric, webbing, canvas, fleece, leather, felt, foam): produce sewing/no-sew instructions with pattern pieces and cut dimensions.
+- KNITTED item (visible knit stitches, stockinette, ribbing, cables): produce full knitting instructions written row by row for each piece — cast on count, stitch pattern per row, increases/decreases, bind off. List yarn weight, needle size, gauge.
+- CROCHETED item (visible crochet stitches, chains, granny squares): produce full crochet instructions written round by round or row by row for each piece — starting chain or magic ring, stitch count per row/round, increases/decreases, fasten off. List yarn weight, hook size, gauge.
+- NEVER mix methods. Match exactly what is shown in the photo.
 ${input.petContext ? `Pet measurements: ${input.petContext}.` : ""}
 
 Respond with ONLY a raw JSON object (no markdown, no code blocks) with these exact fields:
