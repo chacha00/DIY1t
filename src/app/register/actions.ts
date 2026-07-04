@@ -2,6 +2,7 @@
 
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { sendWelcomeEmail } from "@/lib/email";
 
 export async function signUp(formData: FormData) {
   const email = String(formData.get("email") ?? "");
@@ -18,6 +19,9 @@ export async function signUp(formData: FormData) {
   if (error) {
     redirect(`/register?error=${encodeURIComponent(error.message)}`);
   }
+
+  const firstName = fullName.split(" ")[0] || "there";
+  sendWelcomeEmail(email, firstName).catch(() => {});
 
   redirect("/register/check-email");
 }

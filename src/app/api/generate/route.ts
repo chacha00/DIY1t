@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { createClient, createServiceRoleClient } from "@/lib/supabase/server";
 import { generateDiyProject } from "@/lib/openai";
+import { sendProjectCompleteEmail, sendThankYouEmail } from "@/lib/email";
 
 export const maxDuration = 300;
 import { BUDGET_OPTIONS, SKILL_LEVELS, TIME_AVAILABLE_OPTIONS } from "@/lib/constants/project-options";
@@ -192,6 +193,28 @@ export async function POST(request: Request) {
     p_user_id: user.id,
     p_money_saved_cents: generated.money_saved_cents,
   });
+
+  // Send project-complete email (non-blocking)
+  if (user.email) {
+    const { data: prof } = await supabase
+      .from("profiles")
+      .select("full_name, projects_count")
+      .eq("id", user.id)
+      .maybeSingle<{ full_name: string | null; projects_count: number | null }>();
+    const firstName = prof?.full_name?.split(" ")[0] || "there";
+    sendProjectCompleteEmail(
+      user.email,
+      firstName,
+      generated.title,
+      project.id,
+      generated.estimated_cost_cents,
+      generated.money_saved_cents
+    ).catch(() => {});
+    // Send thank-you on their first completed project
+    if ((prof?.projects_count ?? 0) <= 1) {
+      sendThankYouEmail(user.email, firstName).catch(() => {});
+    }
+  }
 
   return NextResponse.json({ projectId: project.id });
 }

@@ -5,6 +5,7 @@ import { getStripe } from "@/lib/stripe";
 import { createServiceRoleClient } from "@/lib/supabase/server";
 import { PLANS } from "@/lib/constants/billing-plans";
 import type { SubscriptionPlan, SubscriptionStatus } from "@/types/database";
+import { sendReceiptEmail } from "@/lib/email";
 
 function planForPriceId(priceId: string | null | undefined) {
   if (!priceId) return null;
@@ -127,9 +128,9 @@ export async function POST(request: Request) {
 
       const { data: profile } = await supabase
         .from("profiles")
-        .select("id")
+        .select("id, full_name, email")
         .eq("stripe_customer_id", customerId)
-        .maybeSingle();
+        .maybeSingle<{ id: string; full_name: string | null; email: string | null }>();
       if (!profile) break;
 
       await supabase.from("payments").insert({
@@ -140,6 +141,20 @@ export async function POST(request: Request) {
         amount_cents: invoice.amount_paid,
         description: "Subscription renewal",
       });
+
+      // Send receipt email
+      if (profile.email) {
+        const firstName = profile.full_name?.split(" ")[0] || "there";
+        const planName = invoice.lines?.data?.[0]?.description ?? "DIY1T Subscription";
+        sendReceiptEmail(
+          profile.email,
+          firstName,
+          planName,
+          invoice.amount_paid,
+          invoice.id,
+          new Date(invoice.created * 1000)
+        ).catch(() => {});
+      }
       break;
     }
 
