@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { ChevronDown } from "lucide-react";
+import { BackBar } from "@/components/ui/BackBar";
 import { Container } from "@/components/ui/Container";
 
 const FAQS = [
@@ -109,7 +110,9 @@ function FAQItem({ q, a }: { q: string; a: string }) {
 
 export default function FAQPage() {
   return (
-    <main className="min-h-screen bg-slate-50 py-20">
+    <>
+      <BackBar />
+      <main className="min-h-screen bg-slate-50 py-20">
       <Container>
         <div className="mx-auto max-w-2xl">
           {/* Header */}

@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { BackBar } from "@/components/ui/BackBar";
 import { Container } from "@/components/ui/Container";
 
 export const metadata: Metadata = {
@@ -8,7 +9,9 @@ export const metadata: Metadata = {
 
 export default function PrivacyPage() {
   return (
-    <main className="min-h-screen bg-slate-50 py-20">
+    <>
+      <BackBar />
+      <main className="min-h-screen bg-slate-50 py-20">
       <Container>
         <div className="mx-auto max-w-2xl">
           <div className="rounded-2xl border border-slate-200 bg-white p-8 shadow-sm">

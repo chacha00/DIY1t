@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { BackBar } from "@/components/ui/BackBar";
 import { Container } from "@/components/ui/Container";
 import { Hammer, Scissors, Heart, Zap } from "lucide-react";
 import Link from "next/link";
@@ -10,7 +11,9 @@ export const metadata: Metadata = {
 
 export default function AboutPage() {
   return (
-    <main className="min-h-screen bg-slate-50 py-20">
+    <>
+      <BackBar />
+      <main className="min-h-screen bg-slate-50 py-20">
       <Container>
         <div className="mx-auto max-w-2xl space-y-10">
 

@@ -1,3 +1,4 @@
+import { BackBar } from "@/components/ui/BackBar";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -7,7 +8,9 @@ export const metadata: Metadata = {
 
 export default function TermsPage() {
   return (
-    <main className="mx-auto max-w-3xl px-6 py-16">
+    <>
+      <BackBar />
+      <main className="mx-auto max-w-3xl px-6 py-16">
       <h1 className="text-3xl font-extrabold text-slate-900">Terms &amp; Conditions</h1>
       <p className="mt-2 text-sm text-slate-400">Last updated: July 3, 2026</p>
 
@@ -106,5 +109,6 @@ export default function TermsPage() {
         </p>
       </div>
     </main>
+    </>
   );
 }
