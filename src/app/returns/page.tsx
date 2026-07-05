@@ -41,8 +41,8 @@ export default function ReturnsPage() {
         <h2>Requesting a Refund</h2>
         <p>
           To request a refund email{" "}
-          <a href="mailto:hello@diy1t.com" className="text-orange-500 underline">
-            hello@diy1t.com
+          <a href="mailto:info@diy1t.com" className="text-orange-500 underline">
+            info@diy1t.com
           </a>{" "}
           with your account email and a brief description of the issue. We will respond within 2 business days.
         </p>
@@ -62,8 +62,8 @@ export default function ReturnsPage() {
         <h2>Contact</h2>
         <p>
           Questions?{" "}
-          <a href="mailto:hello@diy1t.com" className="text-orange-500 underline">
-            hello@diy1t.com
+          <a href="mailto:info@diy1t.com" className="text-orange-500 underline">
+            info@diy1t.com
           </a>
         </p>
       </div>

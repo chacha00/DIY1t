@@ -34,7 +34,7 @@ export default function TermsPage() {
         <h2>4. User Accounts</h2>
         <p>
           You are responsible for maintaining the confidentiality of your account credentials and for all
-          activity that occurs under your account. Notify us immediately at hello@diy1t.com if you suspect
+          activity that occurs under your account. Notify us immediately at info@diy1t.com if you suspect
           unauthorized access.
         </p>
 
@@ -99,8 +99,8 @@ export default function TermsPage() {
         <h2>13. Contact</h2>
         <p>
           Questions? Email us at{" "}
-          <a href="mailto:hello@diy1t.com" className="text-orange-500 underline">
-            hello@diy1t.com
+          <a href="mailto:info@diy1t.com" className="text-orange-500 underline">
+            info@diy1t.com
           </a>
           .
         </p>
