@@ -127,7 +127,7 @@ export function Examples() {
                       alt={ex.photoAlt}
                       fill
                       className="object-cover"
-                      unoptimized
+                      sizes="(max-width: 768px) 100vw, 33vw"
                     />
                   </div>
                   <p className="mt-2 text-center text-xs text-slate-400">Any photo works — phone pics are fine</p>
@@ -166,7 +166,7 @@ export function Examples() {
                       alt={ex.finishedAlt}
                       fill
                       className="object-cover"
-                      unoptimized
+                      sizes="(max-width: 768px) 100vw, 33vw"
                     />
                     <div className="absolute bottom-2 right-2 rounded-full bg-brand-teal-500 px-2 py-1 text-xs font-bold text-white">
                       Saved {ex.savings}

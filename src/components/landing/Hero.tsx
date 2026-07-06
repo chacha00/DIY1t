@@ -88,7 +88,7 @@ export function Hero() {
             <div className="grid gap-0 lg:grid-cols-2">
               {/* Left: Upload side */}
               <div className="border-r border-slate-100 p-6">
-                <p className="mb-3 text-xs font-bold uppercase tracking-widest text-slate-400">Your Photo</p>
+                <h3 className="mb-3 text-xs font-bold uppercase tracking-widest text-slate-400">Your Photo</h3>
                 <div className="relative overflow-hidden rounded-2xl">
                   <Image
                     src="/images/harness3.jpg"
@@ -96,7 +96,8 @@ export function Hero() {
                     width={600}
                     height={400}
                     className="w-full object-cover"
-                    unoptimized
+                    priority
+                    sizes="(max-width: 768px) 100vw, 50vw"
                   />
                   <div className="absolute inset-0 flex items-end bg-gradient-to-t from-black/40 to-transparent p-4">
                     <span className="rounded-full bg-white/90 px-3 py-1 text-xs font-semibold text-slate-700">
@@ -118,7 +119,7 @@ export function Hero() {
 
               {/* Right: Results side */}
               <div className="p-6">
-                <p className="mb-3 text-xs font-bold uppercase tracking-widest text-slate-400">Your DIY Plan</p>
+                <h3 className="mb-3 text-xs font-bold uppercase tracking-widest text-slate-400">Your DIY Plan</h3>
 
                 {/* Pattern preview */}
                 <div className="relative overflow-hidden rounded-2xl bg-amber-50 border border-amber-100 p-4">

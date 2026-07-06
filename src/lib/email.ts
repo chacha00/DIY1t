@@ -7,7 +7,7 @@ function getResend() {
   return _resend;
 }
 
-const FROM = "DIY1T <hello@diy1t.com>";
+const FROM = "DIY1T <info@diy1t.com>";
 const BASE_URL = "https://www.diy1t.com";
 
 function layout(body: string) {
