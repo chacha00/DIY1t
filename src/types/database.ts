@@ -42,18 +42,41 @@ export interface ProjectStep {
   image_url?: string;
 }
 
+export interface PatternPieceNotch {
+  edge: "top" | "right" | "bottom" | "left";
+  position_pct: number; // 0–100 percent along that edge
+}
+
 export interface PatternPiece {
   name: string;
   width_in: number;
   height_in: number;
   quantity: number;
   notes?: string;
-  shape?: "rectangle" | "square" | "circle" | "triangle" | "custom";
+  shape?: "rectangle" | "square" | "circle" | "triangle" | "trapezoid" | "curved" | "custom";
+  seam_allowance_in?: number;
+  grain_direction?: string;
+  fold_edge?: "none" | "top" | "left" | "bottom" | "right";
+  notches?: PatternPieceNotch[];
+  cut_instruction?: string; // e.g. "Cut 2 on fold", "Cut 1", "Cut 4"
+  shape_description?: string; // extra curve/shape detail
+}
+
+export interface PatternAbbreviation {
+  term: string;
+  definition: string;
+}
+
+export interface FabricRequirement {
+  component: string;
+  yards: string; // e.g. "¼ yd" or a per-size range
+  notes?: string;
 }
 
 export interface ProjectMeasurement {
   label: string;
   value: string;
+  category?: "fitting" | "finished" | "pattern" | "hardware" | "seam" | "adjustment";
 }
 
 export interface DiyScore {
