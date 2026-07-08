@@ -1,5 +1,6 @@
 "use client";
 
+import type React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
@@ -11,12 +12,14 @@ import {
   Settings,
   Hammer,
   Sparkles,
+  Layers,
 } from "lucide-react";
 import { cn } from "@/lib/cn";
 
-const NAV_ITEMS = [
+const NAV_ITEMS: { label: string; href: string; icon: React.ElementType; proOnly?: boolean }[] = [
   { label: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
   { label: "Projects", href: "/dashboard/projects", icon: FolderKanban },
+  { label: "Batch Generate", href: "/dashboard/batch", icon: Layers, proOnly: true },
   { label: "Saved", href: "/dashboard/saved", icon: Heart },
   { label: "Pet Profiles", href: "/dashboard/pets", icon: PawPrint },
   { label: "Billing", href: "/dashboard/billing", icon: CreditCard },
@@ -61,6 +64,11 @@ export function Sidebar() {
             >
               <item.icon className="h-4.5 w-4.5" />
               {item.label}
+              {item.proOnly && (
+                <span className="ml-auto rounded-md bg-brand-orange-100 px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wide text-brand-orange-600">
+                  Pro
+                </span>
+              )}
             </Link>
           );
         })}

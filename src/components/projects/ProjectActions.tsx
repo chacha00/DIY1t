@@ -2,16 +2,24 @@
 
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { Download, Heart, Share2, RefreshCw, Wand2, Loader2 } from "lucide-react";
+import { Download, Heart, Share2, RefreshCw, Wand2, Loader2, Scissors } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { ImproveDesignModal } from "@/components/projects/ImproveDesignModal";
 import { toggleFavorite } from "@/app/dashboard/projects/[id]/actions";
 
-export function ProjectActions({ projectId, isFavorite }: { projectId: string; isFavorite: boolean }) {
+export function ProjectActions({
+  projectId,
+  isFavorite,
+  patternPieceCount = 0,
+}: {
+  projectId: string;
+  isFavorite: boolean;
+  patternPieceCount?: number;
+}) {
   const router = useRouter();
   const [favorite, setFavorite] = useState(isFavorite);
   const [favPending, startFavTransition] = useTransition();
-  const [downloading, setDownloading] = useState<"instructions" | "shopping_list" | null>(null);
+  const [downloading, setDownloading] = useState<"instructions" | "shopping_list" | "svg" | null>(null);
   const [anotherLoading, setAnotherLoading] = useState(false);
   const [anotherError, setAnotherError] = useState<string | null>(null);
   const [showImproveModal, setShowImproveModal] = useState(false);
@@ -26,6 +34,12 @@ export function ProjectActions({ projectId, isFavorite }: { projectId: string; i
   function handleDownload(kind: "instructions" | "shopping_list") {
     setDownloading(kind);
     window.location.href = `/api/projects/${projectId}/pdf?kind=${kind}`;
+    setTimeout(() => setDownloading(null), 2000);
+  }
+
+  function handleSvgDownload() {
+    setDownloading("svg");
+    window.location.href = `/api/projects/${projectId}/svg?piece=-1`;
     setTimeout(() => setDownloading(null), 2000);
   }
 
@@ -69,6 +83,19 @@ export function ProjectActions({ projectId, isFavorite }: { projectId: string; i
           {downloading === "shopping_list" ? <Loader2 className="h-4 w-4 animate-spin" /> : <Download className="h-4 w-4" />}
           Shopping List
         </Button>
+
+        {patternPieceCount > 0 && (
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={handleSvgDownload}
+            disabled={downloading !== null}
+            title="Download print-ready SVG pattern pieces"
+          >
+            {downloading === "svg" ? <Loader2 className="h-4 w-4 animate-spin" /> : <Scissors className="h-4 w-4" />}
+            SVG Patterns
+          </Button>
+        )}
 
         <Button variant="outline" size="sm" onClick={handleFavorite} disabled={favPending}>
           <Heart className={`h-4 w-4 ${favorite ? "fill-brand-orange-500 text-brand-orange-500" : ""}`} />

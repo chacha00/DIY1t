@@ -53,16 +53,22 @@ export async function POST(request: Request) {
       .eq("id", user.id);
   }
 
-  const session = await stripe.checkout.sessions.create({
-    customer: customerId,
-    mode: plan.mode,
-    line_items: [{ price: priceId, quantity: 1 }],
-    success_url: `${appUrl}/dashboard/billing?checkout=success`,
-    cancel_url: `${appUrl}/pricing?checkout=cancelled`,
-    metadata: { supabase_user_id: user.id, plan_id: plan.id },
-    subscription_data:
-      plan.mode === "subscription" ? { metadata: { supabase_user_id: user.id, plan_id: plan.id } } : undefined,
-  });
+  const session = await stripe.checkout.sessions.create(
+    {
+      customer: customerId,
+      mode: plan.mode,
+      line_items: [{ price: priceId, quantity: 1 }],
+      success_url: `${appUrl}/dashboard/billing?checkout=success`,
+      cancel_url: `${appUrl}/pricing?checkout=cancelled`,
+      metadata: { supabase_user_id: user.id, plan_id: plan.id },
+      subscription_data:
+        plan.mode === "subscription" ? { metadata: { supabase_user_id: user.id, plan_id: plan.id } } : undefined,
+      automatic_tax: { enabled: true },
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      managed_payments: { enabled: true } as any,
+    },
+    { headers: { "stripe-version": "2026-02-25.preview" } }
+  );
 
   return NextResponse.json({ url: session.url });
 }

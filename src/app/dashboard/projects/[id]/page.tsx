@@ -96,7 +96,11 @@ export default async function ProjectDetailPage({ params }: { params: Promise<{ 
       ) : null}
 
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <ProjectActions projectId={project.id} isFavorite={project.is_favorite} />
+        <ProjectActions
+          projectId={project.id}
+          isFavorite={project.is_favorite}
+          patternPieceCount={project.pattern_pieces?.length ?? 0}
+        />
         {project.user_id === user?.id && (
           <PublishToggle projectId={project.id} isPublic={project.is_public} />
         )}
