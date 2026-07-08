@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
-import { createClient } from "@/lib/supabase/server";
+import type { SupabaseClient } from "@supabase/supabase-js";
+import { createClient, createServiceRoleClient } from "@/lib/supabase/server";
 
 export async function GET(request: Request) {
   const { searchParams, origin } = new URL(request.url);
@@ -8,9 +9,33 @@ export async function GET(request: Request) {
 
   if (code) {
     const supabase = await createClient();
-    const { error } = await supabase.auth.exchangeCodeForSession(code);
-    if (!error) {
-      return NextResponse.redirect(`${origin}${next}`);
+    const { data: { user }, error } = await supabase.auth.exchangeCodeForSession(code);
+    if (!error && user) {
+      // Attribution: if a referral cookie is present, link this signup to the referrer
+      const refCookie = request.headers.get("cookie")
+        ?.split(";")
+        .map(c => c.trim())
+        .find(c => c.startsWith("diy1t_ref="))
+        ?.split("=")[1];
+
+      if (refCookie) {
+        const svc = createServiceRoleClient() as unknown as SupabaseClient;
+        // Update the most recent click row for this code that hasn't been signed up yet
+        await svc
+          .from("referrals")
+          .update({ referred_id: user.id, signed_up_at: new Date().toISOString() })
+          .eq("code", refCookie)
+          .is("referred_id", null)
+          .order("clicked_at", { ascending: false })
+          .limit(1);
+      }
+
+      const response = NextResponse.redirect(`${origin}${next}`);
+      // Clear the referral cookie after attribution
+      if (refCookie) {
+        response.cookies.set("diy1t_ref", "", { path: "/", maxAge: 0 });
+      }
+      return response;
     }
   }
 

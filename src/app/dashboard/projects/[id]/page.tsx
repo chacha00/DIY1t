@@ -11,7 +11,9 @@ import { PublishToggle } from "@/components/projects/PublishToggle";
 import { GeneratePreviewButton } from "@/components/projects/GeneratePreviewButton";
 import { PatternAndMeasurements } from "@/components/projects/PatternAndMeasurements";
 import { SizeChart } from "@/components/projects/SizeChart";
-import type { Project, SavedImage } from "@/types/database";
+import { PricingCalculator } from "@/components/projects/PricingCalculator";
+import { EtsyListingHelper } from "@/components/projects/EtsyListingHelper";
+import type { Project, SavedImage, Subscription } from "@/types/database";
 import type { SizeChartRow } from "@/lib/openai";
 
 function formatCents(cents: number | null) {
@@ -40,6 +42,16 @@ export default async function ProjectDetailPage({ params }: { params: Promise<{ 
     .maybeSingle<Project>();
 
   if (!project) notFound();
+
+  const { data: subscription } = await supabase
+    .from("subscriptions")
+    .select("plan, status")
+    .eq("user_id", user?.id ?? "")
+    .eq("status", "active")
+    .maybeSingle<Pick<Subscription, "plan" | "status">>();
+
+  const isMakerPro = subscription?.plan === "annual_unlimited";
+  const isOwner = project.user_id === user?.id;
 
   let previewImageUrl: string | null = null;
   if (project.preview_image_id) {
@@ -82,7 +94,7 @@ export default async function ProjectDetailPage({ params }: { params: Promise<{ 
           alt={project.title}
           className="aspect-video w-full rounded-3xl object-cover shadow-soft-lg"
         />
-      ) : project.user_id === user?.id ? (
+      ) : isOwner ? (
         <div className="flex items-center gap-4 rounded-3xl border-2 border-dashed border-slate-200 bg-slate-50 px-6 py-8">
           <div className="text-4xl">🎨</div>
           <div>
@@ -101,7 +113,7 @@ export default async function ProjectDetailPage({ params }: { params: Promise<{ 
           isFavorite={project.is_favorite}
           patternPieceCount={project.pattern_pieces?.length ?? 0}
         />
-        {project.user_id === user?.id && (
+        {isOwner && (
           <PublishToggle projectId={project.id} isPublic={project.is_public} />
         )}
       </div>
@@ -133,6 +145,25 @@ export default async function ProjectDetailPage({ params }: { params: Promise<{ 
             moneySavedCents={project.money_saved_cents}
           />
           <ToolsAndSafety tools={project.tools} safetyWarnings={project.safety_warnings} />
+          {isOwner && isMakerPro && (
+            <>
+              <PricingCalculator
+                materialCostCents={project.estimated_cost_cents ?? 0}
+                estimatedTimeMinutes={project.estimated_time_minutes ?? 60}
+                title={project.title}
+              />
+              <EtsyListingHelper projectId={project.id} />
+            </>
+          )}
+          {isOwner && !isMakerPro && (
+            <div className="rounded-2xl border-2 border-dashed border-purple-100 bg-purple-50 px-5 py-6 text-center">
+              <p className="text-sm font-semibold text-purple-700">Maker Pro features</p>
+              <p className="mt-1 text-xs text-purple-500">Upgrade to Maker Pro to unlock the pricing calculator and Etsy listing helper for this project.</p>
+              <a href="/pricing" className="mt-3 inline-block rounded-full bg-purple-600 px-4 py-1.5 text-xs font-semibold text-white hover:bg-purple-700 transition-colors">
+                Upgrade to Pro
+              </a>
+            </div>
+          )}
         </div>
       </div>
     </div>

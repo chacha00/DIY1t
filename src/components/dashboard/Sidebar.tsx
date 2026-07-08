@@ -13,6 +13,7 @@ import {
   Hammer,
   Sparkles,
   Layers,
+  TrendingUp,
 } from "lucide-react";
 import { cn } from "@/lib/cn";
 
@@ -20,6 +21,7 @@ const NAV_ITEMS: { label: string; href: string; icon: React.ElementType; proOnly
   { label: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
   { label: "Projects", href: "/dashboard/projects", icon: FolderKanban },
   { label: "Batch Generate", href: "/dashboard/batch", icon: Layers, proOnly: true },
+  { label: "Affiliate", href: "/dashboard/affiliate", icon: TrendingUp, proOnly: true },
   { label: "Saved", href: "/dashboard/saved", icon: Heart },
   { label: "Pet Profiles", href: "/dashboard/pets", icon: PawPrint },
   { label: "Billing", href: "/dashboard/billing", icon: CreditCard },
