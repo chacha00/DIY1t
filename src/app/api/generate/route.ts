@@ -168,6 +168,19 @@ export async function POST(request: Request) {
     diy_score: generated.diy_score,
     tags: generated.tags,
     ai_model: "gpt-4o",
+    ai_generation_meta: {
+      construction_notes: generated.construction_notes ?? null,
+      design_improvements: generated.design_improvements ?? [],
+      cost_tiers: generated.cost_tiers ?? [],
+      variants: generated.variants ?? [],
+      fabric_requirements: generated.fabric_requirements ?? [],
+      fit_checklist: generated.fit_checklist ?? [],
+      beginner_tips: generated.beginner_tips ?? [],
+      abbreviations: generated.abbreviations ?? [],
+      finishing_recommendations: generated.finishing_recommendations ?? [],
+      maintenance_guide: generated.maintenance_guide ?? [],
+      repair_guide: generated.repair_guide ?? [],
+    },
   };
 
   const { data: project, error: projectError } = await insertRow(supabase, "projects", projectPayload)
