@@ -51,7 +51,7 @@ interface PatternPieceExt extends PatternPiece {
 }
 
 interface MeasurementExt extends ProjectMeasurement {
-  category?: string;
+  category?: "fitting" | "finished" | "pattern" | "hardware" | "seam" | "adjustment";
 }
 
 export function PatternAndMeasurements({
