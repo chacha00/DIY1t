@@ -163,5 +163,6 @@ export default function FAQPage() {
         </div>
       </Container>
     </main>
+    </>
   );
 }
