@@ -325,6 +325,55 @@ export interface Database {
       credit_transactions: Table<CreditTransaction>;
       public_profiles: Table<PublicProfile>;
       email_leads: Table<{ id: string; email: string; source: string; created_at: string }>;
+      step_progress: Table<{
+        id: string;
+        user_id: string;
+        project_id: string;
+        step_order: number;
+        completed: boolean;
+        photo_url: string | null;
+        ai_feedback: string | null;
+        completed_at: string | null;
+        created_at: string;
+        updated_at: string;
+      }>;
+      craft_inventory: Table<{
+        id: string;
+        user_id: string;
+        name: string;
+        category: string;
+        color: string | null;
+        quantity_estimate: string | null;
+        confidence: number;
+        photo_url: string | null;
+        notes: string | null;
+        created_at: string;
+      }>;
+      saved_projects: Table<{
+        id: string;
+        user_id: string;
+        project_id: string;
+        created_at: string;
+      }>;
+      project_makes: Table<{
+        id: string;
+        user_id: string;
+        project_id: string;
+        cloudinary_public_id: string | null;
+        url: string;
+        caption: string | null;
+        created_at: string;
+      }>;
+      maker_planner: Table<{
+        id: string;
+        user_id: string;
+        project_id: string | null;
+        entry_date: string;
+        title: string;
+        notes: string | null;
+        is_done: boolean;
+        created_at: string;
+      }>;
     };
     Views: Record<string, never>;
     Functions: {
