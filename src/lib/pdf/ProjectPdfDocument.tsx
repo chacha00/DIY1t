@@ -424,17 +424,17 @@ export function ProjectPdfDocument({
                 <View style={s.stepText}>
                   <Text style={s.stepTitle}>{step.title}</Text>
                   <Text style={s.stepDesc}>{step.description}</Text>
-                  {step.quality_checkpoint && (
-                    <Text style={[s.stepMeta, { color: C.teal }]}>✓ {step.quality_checkpoint}</Text>
+                  {(step as any).quality_checkpoint && (
+                    <Text style={[s.stepMeta, { color: C.teal }]}>✓ {(step as any).quality_checkpoint}</Text>
                   )}
-                  {step.pro_tip && (
-                    <Text style={[s.stepMeta, { color: C.blue }]}>💡 {step.pro_tip}</Text>
+                  {(step as any).pro_tip && (
+                    <Text style={[s.stepMeta, { color: C.blue }]}>💡 {(step as any).pro_tip}</Text>
                   )}
                   {(step as any).technique_note && (
                     <Text style={[s.stepMeta, { color: C.orange }]}>🧵 {(step as any).technique_note}</Text>
                   )}
-                  {step.common_mistake && (
-                    <Text style={[s.stepMeta, { color: "#9a3412" }]}>⚠ {step.common_mistake}</Text>
+                  {(step as any).common_mistake && (
+                    <Text style={[s.stepMeta, { color: "#9a3412" }]}>⚠ {(step as any).common_mistake}</Text>
                   )}
                 </View>
               </View>
