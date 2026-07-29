@@ -196,7 +196,7 @@ export function ProjectPdfDocument({
 
         {previewImageUrl && <Image src={previewImageUrl} style={s.previewImage} />}
 
-        {project.assembly_overview && (
+        {(project as any).assembly_overview && (
           <>
             <Text style={s.sec}>Overview</Text>
             <Text style={{ fontSize: 9.5, color: C.slate600, lineHeight: 1.5, marginBottom: 4 }}>
