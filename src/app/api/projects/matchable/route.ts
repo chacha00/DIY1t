@@ -15,7 +15,7 @@ export async function GET() {
 
   if (!inventory?.length) return NextResponse.json({ projects: [], inventoryCount: 0 });
 
-  const inventoryNames = inventory.map((i) => i.name.toLowerCase());
+  const inventoryNames = inventory.map((i: { name: string; category: string }) => i.name.toLowerCase());
 
   // Get user's projects with materials
   const { data: projects } = await supabase
