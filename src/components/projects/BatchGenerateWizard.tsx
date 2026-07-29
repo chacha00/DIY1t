@@ -120,8 +120,8 @@ export function BatchGenerateWizard({ pets }: { pets: Pick<Pet, "id" | "name" | 
   return (
     <div className="space-y-6">
       {/* Drop zone */}
-      <Card
-        className="cursor-pointer border-2 border-dashed border-slate-200 bg-slate-50 p-8 text-center hover:border-brand-blue-400 hover:bg-brand-blue-50 transition-colors"
+      <div
+        className="cursor-pointer rounded-2xl border-2 border-dashed border-slate-200 bg-slate-50 p-8 text-center hover:border-brand-blue-400 hover:bg-brand-blue-50 transition-colors"
         onClick={() => fileInputRef.current?.click()}
         onDragOver={e => e.preventDefault()}
         onDrop={e => { e.preventDefault(); handleFiles(e.dataTransfer.files); }}
@@ -139,7 +139,7 @@ export function BatchGenerateWizard({ pets }: { pets: Pick<Pet, "id" | "name" | 
           className="hidden"
           onChange={e => e.target.files && handleFiles(e.target.files)}
         />
-      </Card>
+      </div>
 
       {/* Image preview grid */}
       {images.length > 0 && (
