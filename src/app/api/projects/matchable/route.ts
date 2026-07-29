@@ -15,7 +15,7 @@ export async function GET() {
 
   if (!inventory?.length) return NextResponse.json({ projects: [], inventoryCount: 0 });
 
-  const inventoryNames = inventory.map((i: { name: string; category: string }) => i.name.toLowerCase());
+  const inventoryNames: string[] = inventory.map((i: { name: string; category: string }) => i.name.toLowerCase());
 
   // Get user's projects with materials
   type ProjectRow = { id: string; title: string; difficulty: string | null; estimated_cost_cents: number | null; estimated_time_minutes: number | null; materials: unknown; build_type: string | null };
