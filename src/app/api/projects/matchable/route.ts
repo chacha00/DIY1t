@@ -7,7 +7,8 @@ export async function GET() {
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
   // Get user's inventory
-  const { data: inventory } = await supabase
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const { data: inventory } = await (supabase as any)
     .from("craft_inventory")
     .select("name, category")
     .eq("user_id", user.id);

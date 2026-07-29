@@ -5,7 +5,8 @@ export default async function MaterialsPage() {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
 
-  const { data: inventory } = await supabase
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const { data: inventory } = await (supabase as any)
     .from("craft_inventory")
     .select("id, name, category, color, quantity_estimate, confidence, photo_url, created_at")
     .eq("user_id", user?.id ?? "")

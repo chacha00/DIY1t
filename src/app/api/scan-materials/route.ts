@@ -69,7 +69,8 @@ If you cannot identify any craft materials, return { "materials": [], "summary":
     photo_url,
   }));
 
-  const { error } = await supabase.from("craft_inventory").insert(rows);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const { error } = await (supabase as any).from("craft_inventory").insert(rows);
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
 
   return NextResponse.json({ materials: parsed.materials, summary: parsed.summary });

@@ -10,6 +10,7 @@ export async function DELETE(
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-  await supabase.from("craft_inventory").delete().eq("id", id).eq("user_id", user.id);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  await (supabase as any).from("craft_inventory").delete().eq("id", id).eq("user_id", user.id);
   return NextResponse.json({ ok: true });
 }

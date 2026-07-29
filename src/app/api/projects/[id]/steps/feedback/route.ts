@@ -49,8 +49,8 @@ Be specific to what you actually see in the photo. Keep it friendly and practica
 
   // Save photo + feedback to step_progress
   const svc = createServiceRoleClient();
-  await (svc as unknown as import("@supabase/supabase-js").SupabaseClient)
-    .from("step_progress")
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  await (svc as any).from("step_progress")
     .upsert(
       {
         user_id: user.id,

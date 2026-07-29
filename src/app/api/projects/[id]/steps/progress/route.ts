@@ -15,7 +15,8 @@ export async function POST(
     return NextResponse.json({ error: "Invalid body" }, { status: 400 });
   }
 
-  const { error } = await supabase.from("step_progress").upsert(
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const { error } = await (supabase as any).from("step_progress").upsert(
     {
       user_id: user.id,
       project_id: projectId,

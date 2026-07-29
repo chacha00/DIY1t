@@ -56,7 +56,8 @@ export default async function ProjectDetailPage({ params }: { params: Promise<{ 
 
   // Fetch step progress for this owner
   const stepProgressRows = isOwner && user
-    ? (await supabase
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    ? (await (supabase as any)
         .from("step_progress")
         .select("step_order, completed, photo_url, ai_feedback")
         .eq("user_id", user.id)

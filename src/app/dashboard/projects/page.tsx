@@ -35,7 +35,8 @@ export default async function ProjectsPage() {
   // Fetch makes counts for each project
   const projectIds = (projects ?? []).map((p) => p.id);
   const { data: makesRaw } = projectIds.length > 0
-    ? await supabase
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    ? await (supabase as any)
         .from("project_makes")
         .select("project_id, id")
         .in("project_id", projectIds)

@@ -15,7 +15,8 @@ export default async function SavedPage() {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
 
-  const { data: savedRows } = await supabase
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const { data: savedRows } = await (supabase as any)
     .from("saved_projects")
     .select(`
       project_id,

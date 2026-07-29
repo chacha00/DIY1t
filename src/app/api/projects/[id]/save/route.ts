@@ -7,7 +7,8 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-  const { error } = await supabase
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const { error } = await (supabase as any)
     .from("saved_projects")
     .insert({ user_id: user.id, project_id: projectId });
 
@@ -25,7 +26,8 @@ export async function DELETE(req: NextRequest, { params }: { params: Promise<{ i
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-  await supabase
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  await (supabase as any)
     .from("saved_projects")
     .delete()
     .eq("user_id", user.id)

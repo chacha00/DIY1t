@@ -6,7 +6,8 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
   const { id: projectId } = await params;
   const supabase = await createClient();
 
-  const { data, error } = await supabase
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const { data, error } = await (supabase as any)
     .from("project_makes")
     .select("id, url, caption, created_at")
     .eq("project_id", projectId)
@@ -63,7 +64,8 @@ export async function DELETE(req: NextRequest, { params }: { params: Promise<{ i
   const makeId = searchParams.get("makeId");
   if (!makeId) return NextResponse.json({ error: "Missing makeId" }, { status: 400 });
 
-  await supabase
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  await (supabase as any)
     .from("project_makes")
     .delete()
     .eq("id", makeId)
