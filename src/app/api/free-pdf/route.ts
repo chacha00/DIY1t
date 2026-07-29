@@ -7,7 +7,7 @@ export const maxDuration = 60;
 
 export async function GET() {
   const buffer = await renderToBuffer(createElement(FreePdfDocument));
-  return new NextResponse(buffer, {
+  return new NextResponse(new Uint8Array(buffer), {
     headers: {
       "Content-Type": "application/pdf",
       "Content-Disposition": 'attachment; filename="top-25-dog-diy-projects.pdf"',
