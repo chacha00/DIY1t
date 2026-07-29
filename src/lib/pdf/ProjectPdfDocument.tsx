@@ -200,7 +200,7 @@ export function ProjectPdfDocument({
           <>
             <Text style={s.sec}>Overview</Text>
             <Text style={{ fontSize: 9.5, color: C.slate600, lineHeight: 1.5, marginBottom: 4 }}>
-              {project.assembly_overview}
+              {(project as any).assembly_overview}
             </Text>
           </>
         )}
