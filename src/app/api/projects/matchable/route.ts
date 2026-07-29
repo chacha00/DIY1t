@@ -18,12 +18,15 @@ export async function GET() {
   const inventoryNames = inventory.map((i: { name: string; category: string }) => i.name.toLowerCase());
 
   // Get user's projects with materials
-  const { data: projects } = await supabase
+  type ProjectRow = { id: string; title: string; difficulty: string | null; estimated_cost_cents: number | null; estimated_time_minutes: number | null; materials: unknown; build_type: string | null };
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const { data: projects } = await (supabase as any)
     .from("projects")
     .select("id, title, difficulty, estimated_cost_cents, estimated_time_minutes, materials, build_type")
     .eq("user_id", user.id)
     .eq("status", "complete")
-    .order("created_at", { ascending: false });
+    .order("created_at", { ascending: false })
+    .returns<ProjectRow[]>();
 
   if (!projects?.length) return NextResponse.json({ projects: [], inventoryCount: inventory.length });
 
