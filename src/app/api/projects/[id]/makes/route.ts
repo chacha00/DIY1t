@@ -42,7 +42,8 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
     folder: `diy1t/makes/${user.id}`,
   });
 
-  const { data: make, error: insertErr } = await supabase
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const { data: make, error: insertErr } = await (supabase as any)
     .from("project_makes")
     .insert({ project_id: projectId, user_id: user.id, cloudinary_public_id: publicId, url, caption })
     .select("id, url, caption, created_at")
