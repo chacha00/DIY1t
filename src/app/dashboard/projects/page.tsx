@@ -42,7 +42,7 @@ export default async function ProjectsPage() {
         .in("project_id", projectIds)
     : { data: [] };
 
-  const makesByProject = (makesRaw ?? []).reduce<Record<string, number>>((acc, m) => {
+  const makesByProject = ((makesRaw ?? []) as { project_id: string; id: string }[]).reduce<Record<string, number>>((acc, m) => {
     acc[m.project_id] = (acc[m.project_id] ?? 0) + 1;
     return acc;
   }, {});
