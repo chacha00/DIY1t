@@ -38,6 +38,7 @@ const PLANS = [
       "Project history & library",
       "Shopping links on every list",
       "Priority AI generation",
+      "Maker's Planner (fabric stash, shopping list & project planner)",
     ],
     cta: "Start DIY+",
     href: "/pricing",

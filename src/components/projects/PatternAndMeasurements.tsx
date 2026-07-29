@@ -1,6 +1,7 @@
 import { Ruler, Scissors, AlertCircle, CheckCircle2 } from "lucide-react";
 import { Card } from "@/components/ui/Card";
 import type { PatternPiece, ProjectMeasurement } from "@/types/database";
+import { buildPieceOutlineD } from "@/lib/svg/pieceOutline";
 
 function PatternGrid({ piece }: { piece: PatternPiece }) {
   const MAX_W = 120;
@@ -9,6 +10,9 @@ function PatternGrid({ piece }: { piece: PatternPiece }) {
   const w = Math.max(piece.width_in * scale, 20);
   const h = Math.max(piece.height_in * scale, 14);
   const isCircle = piece.shape === "circle";
+  const effScaleX = w / piece.width_in;
+  const effScaleY = h / piece.height_in;
+  const outlineD = buildPieceOutlineD(piece.width_in, piece.height_in, effScaleX, effScaleY, 4, 4, piece.openings);
 
   return (
     <div className="flex items-center justify-center rounded-xl bg-brand-blue-50 p-3" style={{ minHeight: 96 }}>
@@ -20,10 +24,10 @@ function PatternGrid({ piece }: { piece: PatternPiece }) {
             fill="#dbeafe" stroke="#2186eb" strokeWidth="1.5" strokeDasharray="4 2"
           />
         ) : (
-          <rect
-            x={4} y={4} width={w} height={h}
+          <path
+            d={outlineD}
             fill="#dbeafe" stroke="#2186eb" strokeWidth="1.5" strokeDasharray="4 2"
-            rx={2}
+            fillRule="evenodd"
           />
         )}
         <text x={(w + 8) / 2} y={(h + 8) / 2 - 3} textAnchor="middle" fontSize="8" fill="#1267c4" fontFamily="sans-serif" fontWeight="bold">

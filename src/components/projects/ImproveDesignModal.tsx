@@ -6,12 +6,14 @@ import { X, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 
 const IMPROVEMENTS = [
-  { id: "cheaper",       label: "💰 Cheaper Version",         desc: "Reduce material cost by 40%+" },
-  { id: "beginner",      label: "🌱 Beginner Version",         desc: "Simpler steps, fewer tools" },
-  { id: "eco_friendly",  label: "♻️ Eco-Friendly Version",     desc: "Sustainable & recycled materials" },
-  { id: "premium",       label: "✨ Premium Version",           desc: "Luxury materials & finish" },
-  { id: "durable",       label: "🔩 Extra Durable Version",    desc: "Built to last for years" },
-  { id: "another_version", label: "🔀 Different Design",       desc: "Completely alternative approach" },
+  { id: "cheaper",         label: "💰 Cheaper Version",          desc: "Reduce material cost by 40%+" },
+  { id: "beginner",        label: "🌱 Beginner Version",          desc: "Simpler steps, fewer tools" },
+  { id: "eco_friendly",    label: "♻️ Eco-Friendly Version",      desc: "Sustainable & recycled materials" },
+  { id: "premium",         label: "✨ Premium Version",            desc: "Luxury materials & finish" },
+  { id: "durable",         label: "🔩 Extra Durable Version",     desc: "Built to last for years" },
+  { id: "another_version", label: "🔀 Different Design",          desc: "Completely alternative approach" },
+  { id: "quick_build",     label: "⚡ Quick Build",               desc: "Complete in under 2 hours" },
+  { id: "kid_friendly",    label: "🧸 Kid-Friendly Version",      desc: "Safe for ages 8+ with adult help" },
 ];
 
 export function ImproveDesignModal({
@@ -61,7 +63,7 @@ export function ImproveDesignModal({
         </div>
 
         <p className="mb-5 text-sm text-slate-500">
-          Choose how to improve this project. A new version will be generated (costs 1 credit).
+          Choose how to improve this project. A new version will be generated using your DIY+ plan.
         </p>
 
         <div className="space-y-2">

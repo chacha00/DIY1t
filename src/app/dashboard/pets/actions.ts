@@ -3,13 +3,35 @@
 import { revalidatePath } from "next/cache";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { createClient } from "@/lib/supabase/server";
-import type { Pet } from "@/types/database";
+import type { Pet, Subscription } from "@/types/database";
 import { redirect } from "next/navigation";
 
 export async function addPet(formData: FormData) {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return;
+
+  // Free tier: max 1 pet profile
+  const { data: subscription } = await supabase
+    .from("subscriptions")
+    .select("plan")
+    .eq("user_id", user.id)
+    .eq("status", "active")
+    .maybeSingle<Pick<Subscription, "plan">>();
+
+  const hasUnlimitedPlan =
+    subscription?.plan === "monthly_unlimited" || subscription?.plan === "annual_unlimited";
+
+  if (!hasUnlimitedPlan) {
+    const { count } = await supabase
+      .from("pets")
+      .select("id", { count: "exact", head: true })
+      .eq("user_id", user.id);
+
+    if ((count ?? 0) >= 1) {
+      redirect("/pricing?feature=pets");
+    }
+  }
 
   const payload: Partial<Pet> = {
     user_id: user.id,

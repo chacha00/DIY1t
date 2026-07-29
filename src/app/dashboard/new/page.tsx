@@ -1,14 +1,19 @@
 import { createClient } from "@/lib/supabase/server";
 import { NewProjectWizard } from "@/components/upload/NewProjectWizard";
-import type { Pet, Profile } from "@/types/database";
+import type { Pet, Subscription } from "@/types/database";
 
-export default async function NewProjectPage() {
+export default async function NewProjectPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ vision_product?: string; vision_category?: string }>;
+}) {
+  const { vision_product, vision_category } = await searchParams;
   const supabase = await createClient();
   const {
     data: { user },
   } = await supabase.auth.getUser();
 
-  const [{ data: pets }, { data: profile }] = await Promise.all([
+  const [{ data: pets }, { data: subscription }] = await Promise.all([
     supabase
       .from("pets")
       .select("id, name, species")
@@ -16,11 +21,14 @@ export default async function NewProjectPage() {
       .order("created_at", { ascending: false })
       .returns<Pick<Pet, "id" | "name" | "species">[]>(),
     supabase
-      .from("profiles")
-      .select("credits_balance")
-      .eq("id", user!.id)
-      .single<Pick<Profile, "credits_balance">>(),
+      .from("subscriptions")
+      .select("plan")
+      .eq("user_id", user!.id)
+      .eq("status", "active")
+      .maybeSingle<Pick<Subscription, "plan">>(),
   ]);
+
+  const hasUnlimited = subscription?.plan === "monthly_unlimited" || subscription?.plan === "annual_unlimited";
 
   return (
     <div className="mx-auto max-w-3xl space-y-2">
@@ -32,7 +40,12 @@ export default async function NewProjectPage() {
       </div>
 
       <div className="pt-4">
-        <NewProjectWizard pets={pets ?? []} creditsRemaining={profile?.credits_balance ?? 0} />
+        <NewProjectWizard
+          pets={pets ?? []}
+          hasUnlimited={hasUnlimited}
+          visionProduct={vision_product}
+          visionCategory={vision_category}
+        />
       </div>
     </div>
   );

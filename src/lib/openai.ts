@@ -21,6 +21,14 @@ export interface GenerationInput {
   preferredMaterials: string;
   timeAvailableLabel: string;
   petContext?: string;
+  visionContext?: string;
+}
+
+export interface SizeCuttingSpec {
+  piece_name: string; // must exactly match a name in pattern_pieces[]
+  width_in: number;
+  height_in: number;
+  notes?: string; // e.g. "Cut 2 on fold" or a size-specific exception
 }
 
 export interface SizeChartRow {
@@ -31,6 +39,10 @@ export interface SizeChartRow {
   back_in: string;
   weight_lbs: string;
   notes: string;
+  cutting_specs?: SizeCuttingSpec[]; // sewn items only; omitted for knit/crochet
+  // Optional garment-specific columns
+  sleeve_in?: string;
+  crotch_in?: string;
 }
 
 export interface CostTier {
@@ -86,6 +98,9 @@ export interface GeneratedProject {
   beginner_tips?: string[];
   abbreviations?: PatternAbbreviation[];
   fabric_requirements?: FabricRequirement[];
+  fabric_consumption_by_size?: { size: string; yards: string; meters: string }[];
+  notions_required?: { item: string; quantity: string; notes?: string }[];
+  notions_optional?: { item: string; quantity: string; notes?: string }[];
   pattern_pieces: PatternPiece[];
   measurements: ProjectMeasurement[];
   size_chart: SizeChartRow[];
@@ -107,7 +122,7 @@ export async function generateDiyProject(input: GenerationInput): Promise<Genera
   const prompt = `You are the lead product designer, master pattern maker, industrial designer, professional seamstress, leatherworker, upholstery expert, and DIY instructor for DIY1T.
 
 Your objective is NOT to imitate or reproduce the uploaded product. Instead, analyze its visible functional features and create an ORIGINAL, professionally engineered DIY design that is equal to or better than the inspiration in terms of durability, usability, comfort, safety, aesthetics, and ease of construction.
-${input.petContext ? `\nPet measurements provided: ${input.petContext}.\n` : ""}
+${input.petContext ? `\nPet measurements provided: ${input.petContext}.\n` : ""}${input.visionContext ? `\nContext from DIY Vision scan: ${input.visionContext}\n` : ""}
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 PHASE 1 — PRODUCT ANALYSIS
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -232,6 +247,10 @@ Respond with ONLY a raw JSON object — no markdown, no code fences, no commenta
   "abbreviations": [],
 
   "steps": [
+    // CRITICAL: this array must contain 10-14 entries in the real response — the single entry below is
+    // only a formatting example. A short project is NOT a valid reason to under-fill this array: break
+    // construction into more granular steps (prep, cut, sew each seam, attach each hardware piece,
+    // finish, fit-check) until you reach 10-14. Fewer than 8 steps will be rejected and regenerated.
     {
       "order":1,
       "title":"Take measurements and scale pattern",
@@ -244,48 +263,68 @@ Respond with ONLY a raw JSON object — no markdown, no code fences, no commenta
     }
   ],
 
+  "notions_required": [
+    {"item":"Separating zipper","quantity":"see size chart length column","notes":"Length varies by size — measure finished back length + 2 cm / ¾ in"},
+    {"item":"Ready-made bias tape (1.5 in wide)","quantity":"1.5 meters / 1.65 yards","notes":"For armhole binding — buy pre-folded double-fold tape"}
+  ],
+  "notions_optional": [
+    {"item":"Synthetic winterizer / batting","quantity":"same amount as main fabric","notes":"Cut matching pieces from FRONT, BACK, and COLLAR patterns; fuse to wrong side before sewing"}
+  ],
+
+  "fabric_consumption_by_size": [
+    {"size":"2XS","yards":"0.44 yards","meters":"0.40 m"},
+    {"size":"XS","yards":"0.55 yards","meters":"0.50 m"},
+    {"size":"S","yards":"0.66 yards","meters":"0.60 m"},
+    {"size":"M","yards":"0.77 yards","meters":"0.70 m"},
+    {"size":"L","yards":"0.93 yards","meters":"0.85 m"},
+    {"size":"XL","yards":"1.09 yards","meters":"1.00 m"},
+    {"size":"2XL","yards":"1.20 yards","meters":"1.10 m"},
+    {"size":"3XL","yards":"1.42 yards","meters":"1.30 m"},
+    {"size":"4XL","yards":"1.64 yards","meters":"1.50 m"}
+  ],
+
   "pattern_pieces": [
     {
-      "name":"CHEST VEST PANEL",
+      "name":"FRONT",
       "width_in":12,
       "height_in":8,
       "quantity":2,
       "shape":"rectangle",
-      "seam_allowance_in":0.625,
-      "grain_direction":"straight grain — length of fabric parallel to dog's spine",
+      "seam_allowance_in":0.375,
+      "grain_direction":"straight grain — length parallel to dog's spine",
       "fold_edge":"none",
-      "cut_instruction":"Cut 2 (1 outer shell + 1 mesh lining)",
+      "cut_instruction":"Cut 2 (1 main fabric + 1 lining)",
       "notches":[{"edge":"right","position_pct":50},{"edge":"bottom","position_pct":25},{"edge":"bottom","position_pct":75}],
-      "shape_description":"Rectangle with 1.5 in radius rounded corners at bottom two corners only. Top edge straight for strap attachment.",
-      "notes":"Reinforce D-ring attachment zone with a 2 in × 2 in square of extra shell fabric fused to wrong side before cutting."
+      "shape_description":"Rectangle with 1 cm radius rounded corners at bottom two corners only. Top edge straight for collar attachment.",
+      "notes":"Mark center front with chalk before cutting. Reinforce attachment zones with iron-on interfacing on wrong side."
     },
     {
-      "name":"SHOULDER STRAP",
-      "width_in":14,
-      "height_in":2,
+      "name":"BACK",
+      "width_in":12.5,
+      "height_in":8.5,
       "quantity":2,
       "shape":"rectangle",
-      "seam_allowance_in":0.625,
-      "grain_direction":"straight grain — length parallel to strap direction",
+      "seam_allowance_in":0.375,
+      "grain_direction":"straight grain — length parallel to dog's spine",
       "fold_edge":"none",
-      "cut_instruction":"Cut 2 — mirror pair",
-      "notches":[{"edge":"left","position_pct":50}],
-      "shape_description":"Long rectangle. Both short ends receive bar tacks. Fold in half lengthwise with right sides together to form tube.",
-      "notes":"Cut webbing 1 in shorter than fabric tube so stitching encases the raw webbing end."
+      "cut_instruction":"Cut 2 (1 main fabric + 1 lining)",
+      "notches":[{"edge":"left","position_pct":50},{"edge":"bottom","position_pct":50}],
+      "shape_description":"Rectangle. Side edges will be joined to FRONT at shoulder and side seams.",
+      "notes":"Match notches to FRONT side seams when sewing together."
     },
     {
-      "name":"BELLY STRAP",
-      "width_in":13,
-      "height_in":2,
+      "name":"COLLAR",
+      "width_in":14,
+      "height_in":2.25,
       "quantity":1,
       "shape":"rectangle",
-      "seam_allowance_in":0.625,
+      "seam_allowance_in":0.375,
       "grain_direction":"straight grain",
-      "fold_edge":"none",
-      "cut_instruction":"Cut 1",
-      "notches":[{"edge":"top","position_pct":50}],
-      "shape_description":"Straight rectangle. Both ends taper to 1 in width over the last 1.5 in for clean buckle feed.",
-      "notes":"Sew two rows of stitching at each buckle feed point — ⅛ in from edge and again at ½ in from edge."
+      "fold_edge":"left",
+      "cut_instruction":"Cut 1 on fold",
+      "notches":[{"edge":"top","position_pct":50},{"edge":"bottom","position_pct":50}],
+      "shape_description":"Long strip cut on fold. Fold in half lengthwise with wrong sides together; secure two layers with zigzag before attaching to neckline.",
+      "notes":"Mark center point on short edge opposite fold for alignment with center back neckline."
     }
   ],
 
@@ -307,11 +346,60 @@ Respond with ONLY a raw JSON object — no markdown, no code fences, no commenta
   ],
 
   "size_chart": [
-    {"size_name":"XS","breed_examples":["Chihuahua","Yorkie","Teacup Poodle"],"chest_in":"10-14","neck_in":"8-10","back_in":"8-10","weight_lbs":"4-8","notes":"Use 1 in webbing. Reduce buckle to 1 in. Scale all pattern pieces by 75%."},
-    {"size_name":"S","breed_examples":["Shih Tzu","Pug","French Bulldog"],"chest_in":"14-18","neck_in":"10-12","back_in":"10-13","weight_lbs":"8-15","notes":"Use 1 in webbing. Standard buckle."},
-    {"size_name":"M","breed_examples":["Beagle","Cocker Spaniel","Corgi"],"chest_in":"18-22","neck_in":"12-14","back_in":"13-16","weight_lbs":"15-30","notes":"Use 1.5 in webbing. Standard pattern as drafted."},
-    {"size_name":"L","breed_examples":["Labrador","Golden Retriever","Boxer"],"chest_in":"22-28","neck_in":"14-18","back_in":"16-20","weight_lbs":"30-60","notes":"Use 1.5 in webbing. Scale chest panel width +2 in."},
-    {"size_name":"XL","breed_examples":["Great Dane","Mastiff","Rottweiler"],"chest_in":"28-36","neck_in":"18-22","back_in":"20-26","weight_lbs":"60-100","notes":"Use 2 in webbing. Use steel hardware. Double all bar tacks."}
+    {"size_name":"2XS","breed_examples":["Chihuahua","Toy Poodle","Pomeranian"],"chest_in":"8-10","neck_in":"6-8","back_in":"6-8","weight_lbs":"2-4","notes":"Use 1 in webbing. Reduce buckle to ¾ in.",
+      "cutting_specs":[
+        {"piece_name":"FRONT","width_in":7,"height_in":5,"notes":"Cut 2 (1 outer + 1 lining)"},
+        {"piece_name":"BACK","width_in":7.5,"height_in":5.5,"notes":"Cut 2 (1 outer + 1 lining)"},
+        {"piece_name":"COLLAR","width_in":8.5,"height_in":1.5,"notes":"Cut 1 on fold"}
+      ]},
+    {"size_name":"XS","breed_examples":["Yorkie","Maltese","Teacup Poodle"],"chest_in":"10-14","neck_in":"8-10","back_in":"8-10","weight_lbs":"4-8","notes":"Use 1 in webbing.",
+      "cutting_specs":[
+        {"piece_name":"FRONT","width_in":8.5,"height_in":6,"notes":"Cut 2 (1 outer + 1 lining)"},
+        {"piece_name":"BACK","width_in":9,"height_in":6.5,"notes":"Cut 2 (1 outer + 1 lining)"},
+        {"piece_name":"COLLAR","width_in":10,"height_in":1.75,"notes":"Cut 1 on fold"}
+      ]},
+    {"size_name":"S","breed_examples":["Shih Tzu","Pug","French Bulldog"],"chest_in":"14-18","neck_in":"10-12","back_in":"10-13","weight_lbs":"8-15","notes":"Use 1 in webbing.",
+      "cutting_specs":[
+        {"piece_name":"FRONT","width_in":10,"height_in":7,"notes":"Cut 2 (1 outer + 1 lining)"},
+        {"piece_name":"BACK","width_in":10.5,"height_in":7.5,"notes":"Cut 2 (1 outer + 1 lining)"},
+        {"piece_name":"COLLAR","width_in":12,"height_in":2,"notes":"Cut 1 on fold"}
+      ]},
+    {"size_name":"M","breed_examples":["Beagle","Cocker Spaniel","Corgi"],"chest_in":"18-22","neck_in":"12-14","back_in":"13-16","weight_lbs":"15-30","notes":"Use 1.5 in webbing. Standard pattern as drafted.",
+      "cutting_specs":[
+        {"piece_name":"FRONT","width_in":12,"height_in":8,"notes":"Cut 2 (1 outer + 1 lining)"},
+        {"piece_name":"BACK","width_in":12.5,"height_in":8.5,"notes":"Cut 2 (1 outer + 1 lining)"},
+        {"piece_name":"COLLAR","width_in":14,"height_in":2.25,"notes":"Cut 1 on fold"}
+      ]},
+    {"size_name":"L","breed_examples":["Labrador","Golden Retriever","Boxer"],"chest_in":"22-28","neck_in":"14-18","back_in":"16-20","weight_lbs":"30-60","notes":"Use 1.5 in webbing.",
+      "cutting_specs":[
+        {"piece_name":"FRONT","width_in":14.5,"height_in":9.5,"notes":"Cut 2 (1 outer + 1 lining)"},
+        {"piece_name":"BACK","width_in":15,"height_in":10,"notes":"Cut 2 (1 outer + 1 lining)"},
+        {"piece_name":"COLLAR","width_in":17,"height_in":2.5,"notes":"Cut 1 on fold"}
+      ]},
+    {"size_name":"XL","breed_examples":["German Shepherd","Husky","Doberman"],"chest_in":"28-34","neck_in":"18-22","back_in":"20-24","weight_lbs":"60-80","notes":"Use 1.5 in webbing.",
+      "cutting_specs":[
+        {"piece_name":"FRONT","width_in":17,"height_in":11,"notes":"Cut 2 (1 outer + 1 lining)"},
+        {"piece_name":"BACK","width_in":17.5,"height_in":11.5,"notes":"Cut 2 (1 outer + 1 lining)"},
+        {"piece_name":"COLLAR","width_in":20,"height_in":2.75,"notes":"Cut 1 on fold"}
+      ]},
+    {"size_name":"2XL","breed_examples":["Labrador Retriever","Weimaraner","Flat-Coated Retriever"],"chest_in":"34-38","neck_in":"22-25","back_in":"24-27","weight_lbs":"80-95","notes":"Use 2 in webbing.",
+      "cutting_specs":[
+        {"piece_name":"FRONT","width_in":19,"height_in":12.5,"notes":"Cut 2 (1 outer + 1 lining)"},
+        {"piece_name":"BACK","width_in":19.5,"height_in":13,"notes":"Cut 2 (1 outer + 1 lining)"},
+        {"piece_name":"COLLAR","width_in":23,"height_in":3,"notes":"Cut 1 on fold"}
+      ]},
+    {"size_name":"3XL","breed_examples":["Great Dane","Bernese Mountain Dog","Irish Wolfhound"],"chest_in":"38-44","neck_in":"25-28","back_in":"27-31","weight_lbs":"95-120","notes":"Use 2 in webbing. Reinforce all stress points.",
+      "cutting_specs":[
+        {"piece_name":"FRONT","width_in":22,"height_in":14,"notes":"Cut 2 (1 outer + 1 lining)"},
+        {"piece_name":"BACK","width_in":22.5,"height_in":14.5,"notes":"Cut 2 (1 outer + 1 lining)"},
+        {"piece_name":"COLLAR","width_in":26,"height_in":3.25,"notes":"Cut 1 on fold"}
+      ]},
+    {"size_name":"4XL","breed_examples":["Mastiff","Saint Bernard","Newfoundland"],"chest_in":"44-52","neck_in":"28-33","back_in":"31-36","weight_lbs":"120-160","notes":"Use 2 in webbing. Use steel hardware. Double all bar tacks.",
+      "cutting_specs":[
+        {"piece_name":"FRONT","width_in":25,"height_in":16,"notes":"Cut 2 (1 outer + 1 lining)"},
+        {"piece_name":"BACK","width_in":25.5,"height_in":16.5,"notes":"Cut 2 (1 outer + 1 lining)"},
+        {"piece_name":"COLLAR","width_in":30,"height_in":3.5,"notes":"Cut 1 on fold"}
+      ]}
   ],
 
   "fit_checklist": [
@@ -378,29 +466,66 @@ DESIGN IMPROVEMENTS — always include 3–6 specific, engineering-level improve
 COST TIERS — always provide Budget / Standard / Premium with realistic per-tier costs, expected lifespan, and honest trade-offs. The Standard tier drives estimated_cost_cents.
 
 PATTERN PIECES (sewn items):
-- Name every piece professionally: CHEST VEST PANEL, BELLY STRAP, SHOULDER STRAP — never "Piece 1"
+- Name every piece using simple, capitalized professional sewing terms: FRONT, BACK, COLLAR, PLACKET, SLEEVE, CUFF, GUSSET, HOOD, LEG, POCKET, WAISTBAND — the same naming used in commercial indie dog patterns (Indie Pattern, LoveDogClothing). Never use compound names like "CHEST VEST PANEL" or "BELLY STRAP PIECE" — these are incorrect; use FRONT and BACK for body panels and COLLAR, PLACKET for those specific components.
+- seam_allowance_in: ⅜ in (0.375) for knit/stretch fabric; ⅝ in (0.625) for woven/Cordura/leather — match to the actual construction method
 - seam_allowance_in: ⅝ in (0.625) for woven/Cordura; ¼ in (0.25) for knit; ½ in (0.5) for leather
 - fold_edge: set only when the piece is cut on fold — never include both halves of a folded piece
 - notches: include on every piece that aligns to another piece — minimum 1 notch per seam junction
 - grain_direction: be specific — "straight grain, length parallel to dog's spine" not just "straight grain"
 - cut_instruction: exact — "Cut 2 (1 outer + 1 lining)", "Cut 1 on fold", "Cut 4 — mirror 2"
 - shape_description: describe any curves, tapers, or non-rectangular features precisely
+- openings: for a body/torso/harness panel with an armhole (vest, harness, coat), add one entry per armhole on the appropriate side edge: {"kind":"armhole","edge":"left" (or "right"),"position_pct":<30-50>,"width_in":3.5-5 for a medium dog,"depth_in":2-3.5,"curve":"standard"}. For a hoodie/sweater body or hood panel with a neckline cut into the top edge, add {"kind":"neckhole","edge":"top","position_pct":50,"width_in":4-6,"depth_in":1.5-2.5,"curve":"shallow"}. For a poncho/cowl-style piece with a fully enclosed head hole in the middle (not touching any edge), add {"kind":"neckhole","edge":"center","width_in":5-7,"depth_in":5-7} — keep width_in and depth_in close to equal so the hole reads as roughly round. For leg holes (onesie body panel, leg warmers), use the same mechanism with "kind":"leghole". Only add openings that are structurally real for that piece — straps, cuffs, pockets, and flat panels normally have none; omit the key or leave it empty rather than forcing one in.
 - notes: include reinforcement zones, special handling, or construction sequence notes
 
-KNITTING INSTRUCTIONS:
-- Gauge: X sts × Y rows = 4 in in [stitch name] on [size] US needles
-- Every row/round ends with stitch count: "Row 4: K2, *P2, K2, rep from * to end (24 sts)"
-- Name every increase/decrease technique: M1L, M1R, kfb, ssk, k2tog, cdd
-- Abbreviations array must list every abbreviation used
+SIZE CHART — always output exactly 9 rows: 2XS, XS, S, M, L, XL, 2XL, 3XL, 4XL. This is the same 9-size system used by professional indie dog sewing patterns (Indie Pattern, LoveDogClothing, etc.). Use the following body measurement ranges as your guide and interpolate breed examples accurately for each size:
+  2XS: chest 8-10", neck 6-8", back 6-8", weight 2-4 lbs — Chihuahua, Toy Poodle, Pomeranian
+  XS:  chest 10-14", neck 8-10", back 8-10", weight 4-8 lbs — Yorkie, Maltese, Teacup Poodle
+  S:   chest 14-18", neck 10-12", back 10-13", weight 8-15 lbs — Shih Tzu, Pug, French Bulldog
+  M:   chest 18-22", neck 12-14", back 13-16", weight 15-30 lbs — Beagle, Cocker Spaniel, Corgi
+  L:   chest 22-28", neck 14-18", back 16-20", weight 30-60 lbs — Labrador, Golden Retriever, Boxer
+  XL:  chest 28-34", neck 18-22", back 20-24", weight 60-80 lbs — German Shepherd, Husky, Doberman
+  2XL: chest 34-38", neck 22-25", back 24-27", weight 80-95 lbs — Weimaraner, Flat-Coated Retriever
+  3XL: chest 38-44", neck 25-28", back 27-31", weight 95-120 lbs — Great Dane, Bernese Mountain Dog
+  4XL: chest 44-52", neck 28-33", back 31-36", weight 120-160 lbs — Mastiff, Saint Bernard, Newfoundland
 
-CROCHET INSTRUCTIONS:
-- Gauge: X sc × Y rows = 4 in with size [letter/mm] hook
-- Every round/row ends with count: "Rnd 3: (sc, inc) × 6 (18)"
+SIZE CHART CUTTING SPECS (sewn items only — omit the cutting_specs key entirely for knit/crochet projects):
+- Every size_chart row must include a cutting_specs array with exactly one entry per pattern_pieces item — never a vague scaling note ("scale by 75%") in place of real numbers.
+- piece_name must exactly match a name in the pattern_pieces array, same string and case.
+- Derive each size's width_in/height_in from the base pattern piece's dimensions using the same proportion implied by that size's chest_in/neck_in relative to the base (M) — round to a sane sewing increment (nearest ¼ in).
+- Sanity-check growth per size step against real commercial patterns: main body panels (FRONT, BACK) grow ~1.5-2 in in width per size step; collar/bands grow ~1 in per step; straps scale by ~10-15% per step. Do not output near-identical dimensions across sizes, and do not output implausibly large jumps.
+- Keep the row-level notes field for general per-size guidance (webbing width, hardware size) — put exact cut numbers only in cutting_specs.
+
+FABRIC CONSUMPTION BY SIZE — always output fabric_consumption_by_size for sewn items, with all 9 size rows. Calculate yardage assuming standard 60 in / 150 cm fabric width with pieces placed efficiently on the fold. Base size (M) total is typically 0.7-0.9 yards; scale up/down ~0.1-0.15 yards per step. Always include both yards and meters.
+
+NOTIONS — for sewn items: always output notions_required (hardware and trims that are definitively needed: zipper, bias tape, webbing, D-rings, buckles) and notions_optional (batting, winterizer, decorative trim, optional pockets). Omit both for knit/crochet. Give specific quantities — "1.5 meters / 1.65 yards of 1.5 in wide double-fold bias tape" not just "bias tape".
+
+KNITTING INSTRUCTIONS (write every knitting step's description as a literal professional pattern — the way a Lion Brand or Ravelry pattern prints, never paraphrased prose):
+- construction_notes must open with a gauge + terminology line in this exact shape: "GAUGE: 14 sts × 18 rows = 4 in (10 cm) in stockinette stitch on US 8 (5 mm) needles. Terms are US terminology throughout." Adjust stitch/row counts, stitch name, needle size, and terminology (US or UK) to match the actual design — never mix US and UK terms in one pattern.
+- Every row is its own numbered line inside the step description: "Row 4: K2, *P2, K2, rep from * to end (24 sts)"
+- Every row ends with the resulting stitch count in parentheses, EXCEPT verbatim repeats of an already-counted row — state the count once, then collapse: "Row 5: Rep Row 4. Rows 6-11: Rep Row 4 six more times." or "Rep Row 4 until piece measures 20 in from cast-on, ending after a WS row." Never spell out more than 4 consecutive identical rows individually.
+- Name every increase/decrease technique explicitly on first use, then abbreviate it: M1L, M1R, kfb, ssk, k2tog, cdd
+- Note which side is facing at any transition point: "ending after a RS row", "with WS facing"
+- Abbreviations array must list every abbreviation used, as {"term":"ssk","definition":"slip, slip, knit — left-leaning decrease"}
+
+CROCHET INSTRUCTIONS (write every crochet step's description as a literal professional pattern — never paraphrased prose):
+- construction_notes must open with a gauge + terminology line in this exact shape: "GAUGE: 12 sc × 14 rows = 4 in (10 cm) with size H/8 (5 mm) hook. Terms are US terminology throughout (US sc = UK dc)." Adjust stitch counts, stitch name, hook size, and terminology to match the actual design — never mix US and UK terms in one pattern.
+- Every row/round is its own numbered line using literal notation: "Ch 30. Row 1: Hdc in 3rd ch from hook and in each ch across (28 sts). Row 2: Ch 2 (does not count as a st), turn, hdc in each st across (28 sts)."
+- The first time a turning/starting chain does not count as a stitch, say so inline: "(ch 2 does not count as a st)" — state once per stitch height used, not on every repeat.
+- Every round/row ends with the count in parentheses: "Rnd 3: (sc, inc) in each st around (18 sts)" — omit only on verbatim repeats after the count is already established.
+- Collapse long identical-row runs the way commercial patterns do: "Rep Row 2 until piece measures 50 in from beginning." Never spell out more than 4 consecutive identical rows individually.
 - Note "stuff as you go" at correct step for amigurumi
-- Left/right limbs always get separate instructions
-- Abbreviations array must list every abbreviation used
+- Left/right limbs always get separate instructions, each restarting its own row/round numbering at 1
+- Abbreviations array must list every abbreviation used, as {"term":"sc","definition":"single crochet"}
 
-STEPS: Write exactly 10–14 numbered steps. Every step description must be self-contained — a builder with no other reference can follow it. Include: which pieces go together, which sides face which direction (right side / wrong side), exact measurements, stitch length settings, what the result looks and feels like when done correctly.
+STEPS: Write exactly 10–14 numbered steps. Every step description must be self-contained — a builder with no other reference can follow it. Use professional sewing language throughout:
+- Always specify which sides face each other: "with right sides of the fabric together", "with wrong sides together"
+- Always specify pressing direction: "press the seam allowances open" or "press towards the back"
+- For KNIT / STRETCH fabric projects: always specify stitch type — "using a serger or zigzag stitch to maintain stretch" (not just "sew")
+- For WOVEN fabric projects: specify "using a straight stitch"
+- Call out alignment points: "aligning the notches", "matching the side seams", "aligning center fronts"
+- State when to turn right side out: "turn right side out through the armhole opening and press"
+- Tip lines should use the same concise, diagram-ready style as professional indie patterns — one clear action per sentence
+For KNITTED or CROCHETED projects, step descriptions must be written as literal row-by-row/round-by-round pattern text per the KNITTING/CROCHET INSTRUCTIONS rules above — never paraphrase stitches in prose.
 
 MATERIAL REASONS: every material entry must have a specific reason explaining why that material was chosen over cheaper alternatives — "durable" alone is not acceptable.
 
@@ -424,7 +549,9 @@ OUTPUT COUNTS:
 - 10–14 detailed steps
 - 3–6 pattern pieces for sewn items (0 for knit/crochet — use steps instead)
 - 8–14 measurements (both imperial and metric for every dimension)
-- 5 size_chart rows
+- 9 size_chart rows (2XS through 4XL); for sewn items, every row's cutting_specs array must have exactly one entry per pattern_piece (matching pattern_pieces.length); omit cutting_specs entirely for knit/crochet projects
+- 9 fabric_consumption_by_size entries (matching all 9 sizes) for sewn items; omit for knit/crochet
+- notions_required and notions_optional for sewn items (omit for knit/crochet)
 - 3–6 fabric_requirements for sewn items
 - 4–6 fit_checklist items
 - 4–8 beginner_tips
@@ -462,6 +589,12 @@ OUTPUT COUNTS:
 
   if (!parsed.title || !parsed.steps?.length) {
     throw new Error("AI response missing required fields (title or steps)");
+  }
+
+  if (parsed.steps.length < 8) {
+    throw new Error(
+      `AI generated only ${parsed.steps.length} step(s) — expected 10-14 detailed steps. Try regenerating.`
+    );
   }
 
   return parsed;

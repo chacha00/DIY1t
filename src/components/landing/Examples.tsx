@@ -11,7 +11,7 @@ const EXAMPLES = [
     result: "Padded Step-In Dog Harness",
     photoSrc: "/images/harness.jpg",
     photoAlt: "Dog wearing a step-in harness",
-    finishedSrc: "/images/harness2.jpg",
+    finishedSrc: "/images/ro6.jpeg",
     finishedAlt: "Dog wearing a handmade padded harness",
     patternColor: "border-brand-blue-300 bg-brand-blue-50",
     patternTextColor: "text-brand-blue-600",

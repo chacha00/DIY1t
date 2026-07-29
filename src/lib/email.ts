@@ -175,6 +175,35 @@ export async function sendReceiptEmail(
   });
 }
 
+// ── Free PDF delivery email ────────────────────────────────────────────────────
+export async function sendFreePdfEmail(to: string) {
+  return getResend().emails.send({
+    from: FROM,
+    to,
+    subject: "Your free PDF: Top 25 Dog DIY Projects 🐾",
+    html: layout(`
+      <h1 style="margin:0 0 8px;font-size:26px;font-weight:800;color:#0f172a;">Here's your free guide! 🎉</h1>
+      <p style="margin:0 0 20px;font-size:15px;color:#475569;line-height:1.6;">
+        Thanks for signing up. Your <strong>Top 25 Dog DIY Projects</strong> guide is ready to download —
+        packed with project ideas, material costs, build times, and skill levels to help you get started today.
+      </p>
+      ${btn("Download Your Free PDF →", `${BASE_URL}/api/free-pdf`)}
+      <hr style="margin:36px 0;border:none;border-top:1px solid #f1f5f9;" />
+      <p style="margin:0 0 12px;font-size:14px;font-weight:700;color:#0f172a;">Want the full step-by-step plan?</p>
+      <p style="margin:0 0 20px;font-size:14px;color:#475569;line-height:1.6;">
+        Upload any pet product photo on DIY1T and our AI instantly generates a complete build guide —
+        pattern pieces, measurements, materials list, and instructions. Free to try.
+      </p>
+      ${btn("Try It Free — No Card Required", `${BASE_URL}/register`)}
+      <hr style="margin:36px 0;border:none;border-top:1px solid #f1f5f9;" />
+      <p style="margin:0;font-size:12px;color:#94a3b8;">
+        You're receiving this because you signed up at diy1t.com.
+        <a href="${BASE_URL}/unsubscribe" style="color:#94a3b8;">Unsubscribe</a>.
+      </p>
+    `),
+  });
+}
+
 // ── Thank-you email (after first project) ─────────────────────────────────────
 export async function sendThankYouEmail(to: string, firstName: string) {
   return getResend().emails.send({

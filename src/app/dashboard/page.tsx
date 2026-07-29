@@ -56,6 +56,7 @@ export default async function DashboardPage() {
     ]);
 
   const planLabel = PLAN_LABELS[subscription?.plan ?? "free"];
+  const hasUnlimited = subscription?.plan === "monthly_unlimited" || subscription?.plan === "annual_unlimited";
   const moneySaved = profile?.total_money_saved_cents
     ? `$${(profile.total_money_saved_cents / 100).toFixed(0)}`
     : "$0";
@@ -74,7 +75,7 @@ export default async function DashboardPage() {
       </div>
 
       <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
-        <StatCard label="Credits Remaining" value={String(profile?.credits_balance ?? 0)} icon={Coins} accent="orange" />
+        <StatCard label="Projects This Month" value={hasUnlimited ? "Unlimited" : String(profile?.credits_balance ?? 0)} icon={Coins} accent="orange" />
         <StatCard label="Total Projects" value={String(profile?.total_projects ?? 0)} icon={FolderKanban} accent="blue" />
         <StatCard label="Money Saved" value={moneySaved} icon={Crown} accent="teal" />
         <StatCard label="Subscription" value={planLabel} icon={Crown} accent="blue" />

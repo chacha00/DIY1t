@@ -1,4 +1,5 @@
 import type { PatternPiece } from "@/types/database";
+import { buildPieceOutlineD } from "./pieceOutline";
 
 const PPI = 72; // points per inch — standard PDF/print resolution
 const MARGIN = 40; // px margin around piece
@@ -45,10 +46,11 @@ export function generatePatternSvg(piece: PatternPiece, pieceIndex: number): str
     <rect x="${ox - sa}" y="${oy - sa}" width="${pw + 2 * sa}" height="${ph + 2 * sa}"
       fill="none" stroke="${esc(color)}" stroke-width="0.75" stroke-dasharray="5 3" opacity="0.45" rx="2"/>`;
 
-  // ── Main piece rectangle ──
+  // ── Main piece outline (follows real cutouts — armholes, neck holes, leg holes) ──
+  const outlineD = buildPieceOutlineD(piece.width_in, piece.height_in, PPI, PPI, ox, oy, piece.openings);
   const pieceRect = `
-    <rect x="${ox}" y="${oy}" width="${pw}" height="${ph}"
-      fill="#f0f9ff" fill-opacity="0.6" stroke="${esc(color)}" stroke-width="2" rx="3"/>`;
+    <path d="${outlineD}"
+      fill="#f0f9ff" fill-opacity="0.6" stroke="${esc(color)}" stroke-width="2" fill-rule="evenodd"/>`;
 
   // ── Grain line (horizontal arrow through center) ──
   const glY = oy + ph / 2;

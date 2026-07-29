@@ -1,9 +1,7 @@
 export type PlanId =
+  | "free"
   | "monthly_unlimited"
-  | "annual_unlimited"
-  | "credit_pack_1"
-  | "credit_pack_5"
-  | "credit_pack_10";
+  | "annual_unlimited";
 
 export interface PlanDefinition {
   id: PlanId;
@@ -20,6 +18,21 @@ export interface PlanDefinition {
 
 export const PLANS: PlanDefinition[] = [
   {
+    id: "free",
+    name: "Free",
+    description: "Try DIY1T with a few projects.",
+    priceLabel: "$0",
+    periodLabel: "forever",
+    mode: "subscription",
+    priceEnvVar: "",
+    features: [
+      "3 projects per month",
+      "Pattern, measurements & step-by-step instructions",
+      "Downloadable PDF",
+      "1 pet profile",
+    ],
+  },
+  {
     id: "monthly_unlimited",
     name: "DIY+",
     description: "For active makers who build regularly.",
@@ -28,13 +41,13 @@ export const PLANS: PlanDefinition[] = [
     mode: "subscription",
     priceEnvVar: "STRIPE_PRICE_MONTHLY_UNLIMITED",
     features: [
-      "Unlimited projects per month",
-      "All 8 customization versions",
+      "Everything in Free",
+      "Unlimited projects",
+      "All 8 AI customizations (cheaper, beginner, eco, premium, durable, alt, quick build, kid-friendly)",
       "Unlimited pet profiles",
       "Project history & library",
       "Shopping links on every list",
       "Priority AI generation",
-      "Printable PDFs",
     ],
   },
   {
@@ -54,39 +67,6 @@ export const PLANS: PlanDefinition[] = [
       "Etsy listing helper",
       "Affiliate revenue sharing",
     ],
-  },
-  {
-    id: "credit_pack_1",
-    name: "1 Project",
-    description: "A single DIY project credit.",
-    priceLabel: "$3",
-    periodLabel: "one-time",
-    mode: "payment",
-    priceEnvVar: "STRIPE_PRICE_CREDIT_PACK_1",
-    creditsGranted: 1,
-    features: ["1 project credit", "Never expires"],
-  },
-  {
-    id: "credit_pack_5",
-    name: "5 Projects",
-    description: "Five DIY project credits.",
-    priceLabel: "$7",
-    periodLabel: "one-time",
-    mode: "payment",
-    priceEnvVar: "STRIPE_PRICE_CREDIT_PACK_5",
-    creditsGranted: 5,
-    features: ["5 project credits", "Never expires", "Save 53%"],
-  },
-  {
-    id: "credit_pack_10",
-    name: "10 Projects",
-    description: "Ten DIY project credits.",
-    priceLabel: "$12",
-    periodLabel: "one-time",
-    mode: "payment",
-    priceEnvVar: "STRIPE_PRICE_CREDIT_PACK_10",
-    creditsGranted: 10,
-    features: ["10 project credits", "Never expires", "Save 60%"],
   },
 ];
 

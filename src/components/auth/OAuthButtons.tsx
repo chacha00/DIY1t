@@ -50,24 +50,15 @@ export function OAuthButtons() {
   }
 
   return (
-    <div className="grid grid-cols-2 gap-3">
+    <div className="flex justify-center">
       <button
         type="button"
         onClick={() => signInWith("google")}
         disabled={loadingProvider !== null}
-        className="flex items-center justify-center gap-2 rounded-full border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-700 transition-colors hover:border-slate-300 hover:bg-slate-50 disabled:opacity-50"
+        className="flex items-center justify-center gap-2 rounded-full border border-slate-200 bg-white px-6 py-3 text-sm font-semibold text-slate-700 transition-colors hover:border-slate-300 hover:bg-slate-50 disabled:opacity-50"
       >
         <GoogleIcon />
-        Google
-      </button>
-      <button
-        type="button"
-        onClick={() => signInWith("apple")}
-        disabled={loadingProvider !== null}
-        className="flex items-center justify-center gap-2 rounded-full border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-700 transition-colors hover:border-slate-300 hover:bg-slate-50 disabled:opacity-50"
-      >
-        <AppleIcon />
-        Apple
+        Continue with Google
       </button>
     </div>
   );

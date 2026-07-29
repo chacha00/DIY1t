@@ -11,11 +11,15 @@ export function ProjectActions({
   projectId,
   isFavorite,
   patternPieceCount = 0,
+  plan,
 }: {
   projectId: string;
   isFavorite: boolean;
   patternPieceCount?: number;
+  plan?: string | null;
 }) {
+  const isMakerPro = plan === "annual_unlimited";
+  const isDiyPlus = plan === "monthly_unlimited" || plan === "annual_unlimited";
   const router = useRouter();
   const [favorite, setFavorite] = useState(isFavorite);
   const [favPending, startFavTransition] = useTransition();
@@ -84,7 +88,7 @@ export function ProjectActions({
           Shopping List
         </Button>
 
-        {patternPieceCount > 0 && (
+        {patternPieceCount > 0 && isMakerPro && (
           <Button
             variant="outline"
             size="sm"
@@ -120,10 +124,12 @@ export function ProjectActions({
           {anotherError && <p className="mt-1 text-xs text-red-500">{anotherError}</p>}
         </div>
 
-        <Button variant="outline" size="sm" onClick={() => setShowImproveModal(true)}>
-          <Wand2 className="h-4 w-4" />
-          Improve Design
-        </Button>
+        {isDiyPlus && (
+          <Button variant="outline" size="sm" onClick={() => setShowImproveModal(true)}>
+            <Wand2 className="h-4 w-4" />
+            Improve Design
+          </Button>
+        )}
       </div>
 
       {showImproveModal && (

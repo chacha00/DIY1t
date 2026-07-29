@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Plus_Jakarta_Sans } from "next/font/google";
 import "./globals.css";
 import { CookieBanner } from "@/components/ui/CookieBanner";
+import { SupportChat } from "@/components/support/SupportChat";
 
 const display = Plus_Jakarta_Sans({
   variable: "--font-display",
@@ -28,6 +29,7 @@ export default function RootLayout({
       <body className="min-h-full flex flex-col bg-white text-slate-900">
         {children}
         <CookieBanner />
+        <SupportChat />
       </body>
     </html>
   );

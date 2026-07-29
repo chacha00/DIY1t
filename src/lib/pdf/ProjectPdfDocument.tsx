@@ -1,8 +1,9 @@
 import {
   Document, Page, Text, View, Image, StyleSheet,
-  Svg, Rect, Line, Polygon, G,
+  Svg, Rect, Line, Polygon, G, Path,
 } from "@react-pdf/renderer";
 import type { Project, PatternPiece } from "@/types/database";
+import { buildPieceOutlineD } from "@/lib/svg/pieceOutline";
 
 const C = {
   navy: "#0f172a",
@@ -68,6 +69,12 @@ const s = StyleSheet.create({
   sizeCell: { fontSize: 7.5, color: C.slate600, flex: 1 },
   sizeCellBold: { fontSize: 7.5, fontWeight: 700, color: C.navy, flex: 1 },
 
+  cuttingWrap: { paddingLeft: 10, paddingTop: 2, paddingBottom: 4, borderBottom: `0.5pt solid ${C.border}` },
+  cuttingRow: { flexDirection: "row", justifyContent: "space-between", paddingVertical: 1 },
+  cuttingPiece: { fontSize: 6.5, color: C.slate500, flex: 2 },
+  cuttingDim: { fontSize: 6.5, fontWeight: 700, color: C.slate600, flex: 1, textAlign: "right" },
+  cuttingNotes: { fontSize: 6, color: C.slate400, flex: 2, textAlign: "right" },
+
   fabricRow: { flexDirection: "row", justifyContent: "space-between", paddingVertical: 3, borderBottom: `0.5pt solid ${C.grayBg}` },
   fabricComp: { fontSize: 8.5, flex: 2 },
   fabricYards: { fontSize: 8.5, fontWeight: 700, color: C.blue, flex: 1, textAlign: "right" },
@@ -103,6 +110,9 @@ function PatternPieceSvg({ piece, index }: { piece: PatternPiece; index: number 
   const totalH = ph + 2 * sa + 16;
   const ox = sa + 8;
   const oy = sa + 8;
+  const effScaleX = pw / piece.width_in;
+  const effScaleY = ph / piece.height_in;
+  const outlineD = buildPieceOutlineD(piece.width_in, piece.height_in, effScaleX, effScaleY, ox, oy, piece.openings);
 
   return (
     <Svg width={totalW} height={totalH} viewBox={`0 0 ${totalW} ${totalH}`}>
@@ -110,8 +120,7 @@ function PatternPieceSvg({ piece, index }: { piece: PatternPiece; index: number 
       <Rect x={ox - sa} y={oy - sa} width={pw + 2 * sa} height={ph + 2 * sa}
         fill="none" stroke={color} strokeWidth={0.5} strokeDasharray="3 2" opacity={0.4} rx={2} />
       {/* Piece fill */}
-      <Rect x={ox} y={oy} width={pw} height={ph}
-        fill="#f0f9ff" fillOpacity={0.5} stroke={color} strokeWidth={1.5} rx={2} />
+      <Path d={outlineD} fill="#f0f9ff" fillOpacity={0.5} stroke={color} strokeWidth={1.5} fillRule="evenodd" />
       {/* Grain line */}
       <Line x1={ox + pw * 0.2} y1={oy + ph / 2} x2={ox + pw * 0.8} y2={oy + ph / 2}
         stroke="#64748b" strokeWidth={0.8} />
@@ -210,6 +219,51 @@ export function ProjectPdfDocument({
                 <Text style={s.fabricComp}>{fr.component}</Text>
                 <Text style={s.fabricYards}>{fr.yards}</Text>
                 <Text style={s.fabricNotes}>{fr.notes ?? ""}</Text>
+              </View>
+            ))}
+          </>
+        )}
+
+        {/* Fabric Consumption by Size */}
+        {(project as any).fabric_consumption_by_size?.length > 0 && (
+          <>
+            <Text style={s.sec}>Fabric Consumption by Size</Text>
+            <Text style={{ fontSize: 7.5, color: C.slate400, marginBottom: 4 }}>
+              Standard fabric width: 60 in / 150 cm. Print at 100% — do not scale to fit.
+            </Text>
+            <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 4 }}>
+              {(project as any).fabric_consumption_by_size.map((fc: any, i: number) => (
+                <View key={i} style={{ width: "28%", flexDirection: "row", justifyContent: "space-between",
+                  paddingVertical: 2.5, paddingHorizontal: 5, backgroundColor: i % 2 === 0 ? C.grayBg : "#ffffff",
+                  borderBottom: `0.5pt solid ${C.border}` }}>
+                  <Text style={{ fontSize: 8, fontWeight: 700, color: C.navy }}>{fc.size}</Text>
+                  <Text style={{ fontSize: 8, color: C.blue }}>{fc.yards}</Text>
+                </View>
+              ))}
+            </View>
+          </>
+        )}
+
+        {/* Notions */}
+        {((project as any).notions_required?.length > 0 || (project as any).notions_optional?.length > 0) && (
+          <>
+            <Text style={s.sec}>Notions &amp; Extras</Text>
+            {(project as any).notions_required?.map((n: any, i: number) => (
+              <View key={i} style={{ flexDirection: "row", gap: 6, marginBottom: 3 }}>
+                <View style={s.checkbox} />
+                <View style={{ flex: 1 }}>
+                  <Text style={{ fontSize: 9, fontWeight: 700 }}>{n.item} — <Text style={{ fontWeight: 400 }}>{n.quantity}</Text></Text>
+                  {n.notes && <Text style={{ fontSize: 7.5, color: C.slate400 }}>{n.notes}</Text>}
+                </View>
+              </View>
+            ))}
+            {(project as any).notions_optional?.map((n: any, i: number) => (
+              <View key={i} style={{ flexDirection: "row", gap: 6, marginBottom: 3 }}>
+                <View style={[s.checkbox, { borderStyle: "dashed" }]} />
+                <View style={{ flex: 1 }}>
+                  <Text style={{ fontSize: 9, color: C.slate500 }}>{n.item} (optional) — {n.quantity}</Text>
+                  {n.notes && <Text style={{ fontSize: 7.5, color: C.slate400 }}>{n.notes}</Text>}
+                </View>
               </View>
             ))}
           </>
@@ -319,16 +373,32 @@ export function ProjectPdfDocument({
                   ))}
                 </View>
                 {(project as any).size_chart.map((row: any, i: number) => (
-                  <View key={i} style={[s.sizeRow, i % 2 === 0 ? { backgroundColor: C.grayBg } : {}]}>
-                    <Text style={s.sizeCellBold}>{row.size_name}</Text>
-                    <Text style={s.sizeCell}>{row.chest_in}"</Text>
-                    <Text style={s.sizeCell}>{row.neck_in}"</Text>
-                    <Text style={s.sizeCell}>{row.back_in}"</Text>
-                    <Text style={s.sizeCell}>{row.weight_lbs} lbs</Text>
-                    <Text style={s.sizeCell}>
-                      {Array.isArray(row.breed_examples) ? row.breed_examples.join(", ") : ""}
-                      {row.notes ? ` · ${row.notes}` : ""}
-                    </Text>
+                  <View key={i}>
+                    <View style={[s.sizeRow, i % 2 === 0 ? { backgroundColor: C.grayBg } : {}]}>
+                      <Text style={s.sizeCellBold}>{row.size_name}</Text>
+                      <Text style={s.sizeCell}>{row.chest_in}"</Text>
+                      <Text style={s.sizeCell}>{row.neck_in}"</Text>
+                      <Text style={s.sizeCell}>{row.back_in}"</Text>
+                      <Text style={s.sizeCell}>{row.weight_lbs} lbs</Text>
+                      <Text style={s.sizeCell}>
+                        {Array.isArray(row.breed_examples) ? row.breed_examples.join(", ") : ""}
+                        {row.notes ? ` · ${row.notes}` : ""}
+                      </Text>
+                    </View>
+                    {Array.isArray(row.cutting_specs) && row.cutting_specs.length > 0 && (
+                      <View style={s.cuttingWrap}>
+                        <Text style={{ fontSize: 6.5, fontWeight: 700, color: C.slate500, marginBottom: 1 }}>
+                          Cutting dimensions — {row.size_name}
+                        </Text>
+                        {row.cutting_specs.map((cs: any, ci: number) => (
+                          <View key={ci} style={s.cuttingRow}>
+                            <Text style={s.cuttingPiece}>{cs.piece_name}</Text>
+                            <Text style={s.cuttingDim}>{cs.width_in}" × {cs.height_in}"</Text>
+                            {cs.notes ? <Text style={s.cuttingNotes}>{cs.notes}</Text> : null}
+                          </View>
+                        ))}
+                      </View>
+                    )}
                   </View>
                 ))}
               </View>

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createServiceRoleClient } from "@/lib/supabase/server";
+import { sendFreePdfEmail } from "@/lib/email";
 
 async function addToMailchimp(email: string) {
   const apiKey = process.env.MAILCHIMP_API_KEY;
@@ -42,8 +43,9 @@ export async function POST(req: NextRequest) {
       .from("email_leads")
       .upsert(payload, { onConflict: "email" });
 
-    // Add to Mailchimp (fire-and-forget, non-blocking)
-    await addToMailchimp(cleanEmail);
+    // Add to Mailchimp and send PDF email (fire-and-forget)
+    addToMailchimp(cleanEmail).catch(() => {});
+    sendFreePdfEmail(cleanEmail).catch(() => {});
 
     return NextResponse.json({ ok: true });
   } catch {

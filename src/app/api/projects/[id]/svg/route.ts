@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { generatePatternSvg } from "@/lib/svg/patternSvg";
-import type { Project } from "@/types/database";
+import type { Project, Subscription } from "@/types/database";
 
 /**
  * GET /api/projects/[id]/svg?piece=0
@@ -16,6 +16,17 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+
+  const { data: subscription } = await supabase
+    .from("subscriptions")
+    .select("plan")
+    .eq("user_id", user.id)
+    .eq("status", "active")
+    .maybeSingle<Pick<Subscription, "plan">>();
+
+  if (subscription?.plan !== "annual_unlimited") {
+    return NextResponse.json({ error: "SVG pattern exports require a Maker Pro subscription." }, { status: 402 });
+  }
 
   const { data: project } = await supabase
     .from("projects")

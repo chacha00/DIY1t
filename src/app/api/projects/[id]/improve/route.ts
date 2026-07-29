@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { createClient, createServiceRoleClient } from "@/lib/supabase/server";
 import { getOpenAI } from "@/lib/openai";
-import type { Profile, Project, Subscription, CreditTransaction } from "@/types/database";
+import type { Project, Subscription } from "@/types/database";
 
 export const maxDuration = 60;
 
@@ -13,6 +13,8 @@ const IMPROVEMENT_PROMPTS: Record<string, string> = {
   premium: "Generate a luxury premium version of this project. Use high-end materials, professional-grade hardware, and elevated design details. This should look and feel like a boutique store purchase.",
   durable: "Generate a more durable version of this project. Focus on longevity — use stronger materials, reinforced joints, and techniques that ensure this lasts for years of heavy use.",
   another_version: "Generate a completely different version of this project with an alternative design approach, different materials, or different construction method. Keep the same function but reimagine the form.",
+  quick_build: "Generate a fast, simplified version of this project that can be completed in under 2 hours. Cut steps wherever possible, use pre-made components, and prioritize speed without sacrificing the core function.",
+  kid_friendly: "Generate a kid-friendly version of this project suitable for ages 8+. Remove sharp tools, toxic materials, and complex techniques. Use simple hand tools or scissors only. Make it fun and safe for children to build with adult supervision.",
 };
 
 const IMPROVEMENT_LABELS: Record<string, string> = {
@@ -22,6 +24,8 @@ const IMPROVEMENT_LABELS: Record<string, string> = {
   premium: "Premium Version",
   durable: "Extra Durable Version",
   another_version: "Alternative Version",
+  quick_build: "Quick Build Version",
+  kid_friendly: "Kid-Friendly Version",
 };
 
 function insertRow(supabase: SupabaseClient, table: string, payload: Record<string, unknown>) {
@@ -49,13 +53,6 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
 
   if (!original) return NextResponse.json({ error: "Project not found" }, { status: 404 });
 
-  // Credit check
-  const { data: profile } = await supabase
-    .from("profiles")
-    .select("credits_balance")
-    .eq("id", user.id)
-    .single<Pick<Profile, "credits_balance">>();
-
   const { data: subscription } = await supabase
     .from("subscriptions")
     .select("plan")
@@ -65,8 +62,8 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
 
   const hasUnlimited = subscription?.plan === "monthly_unlimited" || subscription?.plan === "annual_unlimited";
 
-  if (!hasUnlimited && (profile?.credits_balance ?? 0) <= 0) {
-    return NextResponse.json({ error: "No credits remaining." }, { status: 402 });
+  if (!hasUnlimited) {
+    return NextResponse.json({ error: "Design improvements require a DIY+ or Maker Pro subscription. Upgrade to unlock all 8 customization types." }, { status: 402 });
   }
 
   const systemPrompt = `You are DIY1T's project designer. You receive an existing DIY project and generate an improved version of it.
@@ -144,17 +141,6 @@ Respond with a JSON object containing: title, difficulty, estimated_cost_cents, 
 
   if (error || !newProject) {
     return NextResponse.json({ error: "Failed to save project" }, { status: 500 });
-  }
-
-  if (!hasUnlimited) {
-    const creditPayload: Partial<CreditTransaction> = {
-      user_id: user.id,
-      amount: -1,
-      reason: "project_generation",
-      related_project_id: newProject.id,
-    };
-    const svc = createServiceRoleClient() as unknown as SupabaseClient;
-    await svc.from("credit_transactions").insert(creditPayload);
   }
 
   const svc2 = createServiceRoleClient() as unknown as SupabaseClient;

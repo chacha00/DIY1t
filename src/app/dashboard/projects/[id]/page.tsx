@@ -4,6 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 import { Badge } from "@/components/ui/Badge";
 import { MaterialsList } from "@/components/projects/MaterialsList";
 import { StepsList } from "@/components/projects/StepsList";
+import { InteractiveStepsList } from "@/components/projects/InteractiveStepsList";
 import { ToolsAndSafety } from "@/components/projects/ToolsAndSafety";
 import { DiyScoreCard } from "@/components/projects/DiyScoreCard";
 import { ProjectActions } from "@/components/projects/ProjectActions";
@@ -52,6 +53,16 @@ export default async function ProjectDetailPage({ params }: { params: Promise<{ 
 
   const isMakerPro = subscription?.plan === "annual_unlimited";
   const isOwner = project.user_id === user?.id;
+
+  // Fetch step progress for this owner
+  const stepProgressRows = isOwner && user
+    ? (await supabase
+        .from("step_progress")
+        .select("step_order, completed, photo_url, ai_feedback")
+        .eq("user_id", user.id)
+        .eq("project_id", id)
+      ).data ?? []
+    : [];
 
   let previewImageUrl: string | null = null;
   if (project.preview_image_id) {
@@ -112,6 +123,7 @@ export default async function ProjectDetailPage({ params }: { params: Promise<{ 
           projectId={project.id}
           isFavorite={project.is_favorite}
           patternPieceCount={project.pattern_pieces?.length ?? 0}
+          plan={subscription?.plan ?? null}
         />
         {isOwner && (
           <PublishToggle projectId={project.id} isPublic={project.is_public} />
@@ -134,8 +146,16 @@ export default async function ProjectDetailPage({ params }: { params: Promise<{ 
             measurements={project.measurements ?? []}
           />
           <SizeChart rows={(project as Project & { size_chart?: SizeChartRow[] }).size_chart ?? []} />
-          <MaterialsList materials={project.materials} />
-          <StepsList steps={project.steps} />
+          <MaterialsList materials={project.materials} showShoppingLinks={subscription?.plan === "monthly_unlimited" || subscription?.plan === "annual_unlimited"} />
+          {isOwner ? (
+            <InteractiveStepsList
+              projectId={project.id}
+              steps={project.steps}
+              initialProgress={stepProgressRows as { step_order: number; completed: boolean; photo_url: string | null; ai_feedback: string | null }[]}
+            />
+          ) : (
+            <StepsList steps={project.steps} />
+          )}
         </div>
 
         <div className="space-y-6">

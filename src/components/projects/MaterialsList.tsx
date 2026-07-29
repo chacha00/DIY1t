@@ -13,7 +13,7 @@ function amazonUrl(query: string) {
   return `https://www.amazon.com/s?k=${encodeURIComponent(query)}&tag=${AFFILIATE_TAG}`;
 }
 
-export function MaterialsList({ materials }: { materials: MaterialLineItem[] }) {
+export function MaterialsList({ materials, showShoppingLinks = false }: { materials: MaterialLineItem[]; showShoppingLinks?: boolean }) {
   return (
     <Card className="p-6">
       <h2 className="flex items-center gap-2 text-base font-bold text-slate-900">
@@ -43,15 +43,17 @@ export function MaterialsList({ materials }: { materials: MaterialLineItem[] }) 
                         {formatCents(item.cost_cents)}
                       </span>
                     )}
-                    <a
-                      href={amazonUrl(item.name)}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-flex items-center gap-1 rounded-lg bg-brand-orange-50 px-2.5 py-1 text-xs font-semibold text-brand-orange-600 hover:bg-brand-orange-100 transition-colors"
-                    >
-                      <ShoppingCart className="h-3 w-3" />
-                      Buy
-                    </a>
+                    {showShoppingLinks && (
+                      <a
+                        href={amazonUrl(item.name)}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-1 rounded-lg bg-brand-orange-50 px-2.5 py-1 text-xs font-semibold text-brand-orange-600 hover:bg-brand-orange-100 transition-colors"
+                      >
+                        <ShoppingCart className="h-3 w-3" />
+                        Buy
+                      </a>
+                    )}
                   </div>
                 </div>
                 {item.alt_options && item.alt_options.length > 0 && (
@@ -71,9 +73,15 @@ export function MaterialsList({ materials }: { materials: MaterialLineItem[] }) 
         ))}
       </div>
 
-      <p className="mt-4 text-xs text-slate-400">
-        * Shopping links go to Amazon. DIY1T may earn a small commission at no extra cost to you.
-      </p>
+      {showShoppingLinks ? (
+        <p className="mt-4 text-xs text-slate-400">
+          * Shopping links go to Amazon. DIY1T may earn a small commission at no extra cost to you.
+        </p>
+      ) : (
+        <p className="mt-4 text-xs text-slate-400">
+          <span className="font-semibold text-brand-blue-500">Upgrade to DIY+</span> to get one-click shopping links for every item.
+        </p>
+      )}
     </Card>
   );
 }

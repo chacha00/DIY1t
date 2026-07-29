@@ -6,7 +6,7 @@ import { sendProjectCompleteEmail, sendThankYouEmail } from "@/lib/email";
 
 export const maxDuration = 300;
 import { BUDGET_OPTIONS, SKILL_LEVELS, TIME_AVAILABLE_OPTIONS } from "@/lib/constants/project-options";
-import type { Profile, Project, Pet, Subscription, CreditTransaction } from "@/types/database";
+import type { Project, Pet, Subscription } from "@/types/database";
 
 function labelFor(options: readonly { label: string; value: string }[], value: string) {
   return options.find((o) => o.value === value)?.label ?? value;
@@ -34,7 +34,7 @@ export async function POST(request: Request) {
   }
 
   const body = await request.json();
-  const { imageId, imageUrl, buildType, budget, skillLevel, preferredMaterials, timeAvailable, petId } = body as {
+  const { imageId, imageUrl, buildType, budget, skillLevel, preferredMaterials, timeAvailable, petId, visionContext } = body as {
     imageId: string;
     imageUrl: string;
     buildType: string;
@@ -43,19 +43,14 @@ export async function POST(request: Request) {
     preferredMaterials: string;
     timeAvailable: string;
     petId?: string;
+    visionContext?: string;
   };
 
   if (!imageId || !imageUrl || !buildType) {
     return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
   }
 
-  // --- Credit / subscription gate ---
-  const { data: profile } = await supabase
-    .from("profiles")
-    .select("credits_balance")
-    .eq("id", user.id)
-    .single<Pick<Profile, "credits_balance">>();
-
+  // --- Subscription gate ---
   const { data: subscription } = await supabase
     .from("subscriptions")
     .select("plan, status")
@@ -66,11 +61,24 @@ export async function POST(request: Request) {
   const hasUnlimitedPlan =
     subscription?.plan === "monthly_unlimited" || subscription?.plan === "annual_unlimited";
 
-  if (!hasUnlimitedPlan && (profile?.credits_balance ?? 0) <= 0) {
-    return NextResponse.json(
-      { error: "No credits remaining. Upgrade or purchase credits to continue." },
-      { status: 402 }
-    );
+  if (!hasUnlimitedPlan) {
+    // Free tier: max 3 projects per calendar month
+    const startOfMonth = new Date();
+    startOfMonth.setDate(1);
+    startOfMonth.setHours(0, 0, 0, 0);
+
+    const { count } = await supabase
+      .from("projects")
+      .select("id", { count: "exact", head: true })
+      .eq("user_id", user.id)
+      .gte("created_at", startOfMonth.toISOString());
+
+    if ((count ?? 0) >= 3) {
+      return NextResponse.json(
+        { error: "You've used all 3 free projects this month. Upgrade to DIY+ or Maker Pro for unlimited projects." },
+        { status: 402 }
+      );
+    }
   }
 
   // --- Pet context (optional) ---
@@ -101,6 +109,7 @@ export async function POST(request: Request) {
       preferredMaterials: preferredMaterials || "No preference",
       timeAvailableLabel: labelFor(TIME_AVAILABLE_OPTIONS, timeAvailable),
       petContext,
+      visionContext,
     });
   } catch (err) {
     const msg = err instanceof Error ? err.message : String(err);
@@ -192,21 +201,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Failed to save project" }, { status: 500 });
   }
 
-  // --- Deduct credit + update rollups (skip credit deduction for unlimited plans) ---
-  if (!hasUnlimitedPlan) {
-    const creditPayload: Partial<CreditTransaction> = {
-      user_id: user.id,
-      amount: -1,
-      reason: "project_generation",
-      related_project_id: project.id,
-    };
-    // Use service-role client — credit_transactions has no INSERT RLS policy
-    // for the user role (to prevent self-granting credits). Service role bypasses
-    // RLS safely since this code only runs server-side.
-    const svc = createServiceRoleClient() as unknown as SupabaseClient;
-    await svc.from("credit_transactions").insert(creditPayload);
-  }
-
+  // --- Update rollups ---
   const svc = createServiceRoleClient() as unknown as SupabaseClient;
   await svc.rpc("increment_profile_stats", {
     p_user_id: user.id,

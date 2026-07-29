@@ -47,6 +47,15 @@ export interface PatternPieceNotch {
   position_pct: number; // 0–100 percent along that edge
 }
 
+export interface PatternPieceOpening {
+  kind: "armhole" | "neckhole" | "leghole" | "custom";
+  edge: "top" | "right" | "bottom" | "left" | "center"; // "center" = fully enclosed hole (e.g. poncho head-hole)
+  position_pct?: number; // 0–100 percent along that edge, same convention as PatternPieceNotch; ignored for "center"
+  width_in: number; // span along the edge; horizontal diameter when edge === "center"
+  depth_in: number; // how far the cut dips inward; vertical diameter when edge === "center"
+  curve?: "shallow" | "standard" | "deep"; // default "standard"
+}
+
 export interface PatternPiece {
   name: string;
   width_in: number;
@@ -58,6 +67,7 @@ export interface PatternPiece {
   grain_direction?: string;
   fold_edge?: "none" | "top" | "left" | "bottom" | "right";
   notches?: PatternPieceNotch[];
+  openings?: PatternPieceOpening[]; // armholes, neck holes, leg holes cut into the piece
   cut_instruction?: string; // e.g. "Cut 2 on fold", "Cut 1", "Cut 4"
   shape_description?: string; // extra curve/shape detail
 }
@@ -70,6 +80,18 @@ export interface PatternAbbreviation {
 export interface FabricRequirement {
   component: string;
   yards: string; // e.g. "¼ yd" or a per-size range
+  notes?: string;
+}
+
+export interface FabricConsumptionBySize {
+  size: string;    // e.g. "2XS", "XS", "M"
+  yards: string;   // e.g. "0.49 yards"
+  meters: string;  // e.g. "0.45 m"
+}
+
+export interface PatternNotion {
+  item: string;
+  quantity: string;
   notes?: string;
 }
 
@@ -144,6 +166,43 @@ export interface Category {
   emoji: string | null;
   sort_order: number;
   is_active: boolean;
+  created_at: string;
+}
+
+export interface FabricStashItem {
+  id: string;
+  user_id: string;
+  fabric_name: string;
+  fiber_content: string | null;
+  color: string | null;
+  yardage: number | null;
+  width_in: number | null;
+  cost_cents: number | null;
+  shop: string | null;
+  notes: string | null;
+  created_at: string;
+}
+
+export interface MakerShoppingListItem {
+  id: string;
+  user_id: string;
+  item_name: string;
+  shop: string | null;
+  budget_cents: number | null;
+  price_cents: number | null;
+  is_bought: boolean;
+  notes: string | null;
+  created_at: string;
+}
+
+export interface PlannerEntry {
+  id: string;
+  user_id: string;
+  project_id: string | null;
+  entry_date: string;
+  title: string;
+  notes: string | null;
+  is_done: boolean;
   created_at: string;
 }
 

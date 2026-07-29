@@ -103,23 +103,6 @@ export default function PricingPage() {
             </Card>
           </div>
 
-          {/* Credit packs */}
-          <div className="mx-auto mt-20 max-w-5xl">
-            <SectionHeading eyebrow="Pay As You Go" title="Or buy credits — no subscription" align="center" />
-            <div className="mt-10 grid gap-6 sm:grid-cols-3">
-              {creditPacks.map((plan) => (
-                <Card key={plan.id} className="p-6 text-center">
-                  <p className="text-sm font-bold text-slate-900">{plan.name}</p>
-                  <p className="mt-2 text-3xl font-extrabold text-slate-900">{plan.priceLabel}</p>
-                  <p className="mt-1 text-xs text-slate-400">{plan.description}</p>
-                  <CheckoutButton planId={plan.id} variant="outline" className="mt-5 w-full">
-                    Buy Now
-                  </CheckoutButton>
-                </Card>
-              ))}
-            </div>
-          </div>
-
           {/* FAQ note */}
           <p className="mt-16 text-center text-xs text-slate-400">
             Free plan resets to 3 uploads on the 1st of every month. Unused free uploads do not roll over.

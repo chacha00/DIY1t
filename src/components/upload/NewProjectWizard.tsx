@@ -10,23 +10,26 @@ import { Card } from "@/components/ui/Card";
 type Stage = "idle" | "uploading" | "generating";
 
 export function NewProjectWizard({
-  creditsRemaining,
+  hasUnlimited = false,
+  visionProduct,
+  visionCategory,
 }: {
   pets?: unknown[];
-  creditsRemaining: number;
+  hasUnlimited?: boolean;
+  visionProduct?: string;
+  visionCategory?: string;
 }) {
   const router = useRouter();
   const [file, setFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [stage, setStage] = useState<Stage>("idle");
   const [error, setError] = useState<string | null>(null);
+  const [monthlyLimitHit, setMonthlyLimitHit] = useState(false);
 
   function handleFileSelected(f: File) {
     setFile(f);
     setPreviewUrl(URL.createObjectURL(f));
   }
-
-  const noCredits = creditsRemaining <= 0;
 
   async function handleGenerate() {
     if (!file) {
@@ -50,15 +53,19 @@ export function NewProjectWizard({
         body: JSON.stringify({
           imageId: uploadJson.imageId,
           imageUrl: uploadJson.url,
-          buildType: "auto",
+          buildType: visionCategory ?? "auto",
           budget: "any",
           skillLevel: "easy",
           preferredMaterials: "No preference",
           timeAvailable: "any",
+          visionContext: visionProduct ? `User scanned a "${visionProduct}" with DIY Vision and wants to build it themselves.` : undefined,
         }),
       });
       const generateJson = await generateRes.json();
-      if (!generateRes.ok) throw new Error(generateJson.error ?? "Generation failed");
+      if (!generateRes.ok) {
+        if (generateRes.status === 402) setMonthlyLimitHit(true);
+        throw new Error(generateJson.error ?? "Generation failed");
+      }
 
       router.push(`/dashboard/projects/${generateJson.projectId}`);
     } catch (err) {
@@ -71,6 +78,17 @@ export function NewProjectWizard({
 
   return (
     <div className="space-y-6">
+      {visionProduct && (
+        <div className="flex items-center gap-3 rounded-2xl bg-brand-blue-50 border border-brand-blue-100 px-4 py-3">
+          <span className="text-xl">👁️</span>
+          <div>
+            <p className="text-sm font-semibold text-brand-blue-800">Building from DIY Vision scan</p>
+            <p className="mt-0.5 text-xs text-brand-blue-600">
+              Identified product: <strong>{visionProduct}</strong>. Now upload a photo to generate your full build plan.
+            </p>
+          </div>
+        </div>
+      )}
       <Card className="p-6">
         <h2 className="text-base font-bold text-slate-900">Upload a Photo</h2>
         <p className="mt-1 text-sm text-slate-500">
@@ -107,14 +125,14 @@ export function NewProjectWizard({
         </div>
       )}
 
-      {noCredits && (
+      {monthlyLimitHit && !hasUnlimited && (
         <div className="flex items-center gap-2 rounded-2xl bg-brand-orange-50 px-4 py-3 text-sm font-medium text-brand-orange-600">
           <AlertCircle className="h-4 w-4 shrink-0" />
-          You&apos;re out of credits. Upgrade your plan or buy a credit pack to keep building.
+          You&apos;ve used all 3 free projects this month. Upgrade to DIY+ or Maker Pro for unlimited projects.
         </div>
       )}
 
-      <Button onClick={handleGenerate} disabled={isBusy || noCredits} size="lg" className="w-full sm:w-auto">
+      <Button onClick={handleGenerate} disabled={isBusy || (monthlyLimitHit && !hasUnlimited)} size="lg" className="w-full sm:w-auto">
         {isBusy ? (
           <>
             <Loader2 className="h-4.5 w-4.5 animate-spin" />

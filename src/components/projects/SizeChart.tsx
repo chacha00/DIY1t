@@ -1,6 +1,45 @@
+import { Fragment } from "react";
 import { TableProperties } from "lucide-react";
 import { Card } from "@/components/ui/Card";
 import type { SizeChartRow } from "@/lib/openai";
+
+function CuttingSpecsRow({ row }: { row: SizeChartRow }) {
+  if (!row.cutting_specs?.length) return null;
+
+  return (
+    <tr>
+      <td colSpan={7} className="bg-slate-50/60 px-4 py-2">
+        <details>
+          <summary className="cursor-pointer text-xs font-semibold text-brand-blue-600">
+            Exact cutting dimensions for {row.size_name}
+          </summary>
+          <div className="mt-2 overflow-x-auto rounded-xl border border-slate-100 bg-white">
+            <table className="w-full min-w-[400px] text-xs">
+              <thead>
+                <tr className="border-b border-slate-100 text-left text-slate-500">
+                  <th className="px-3 py-2 font-semibold">Piece</th>
+                  <th className="px-3 py-2 font-semibold">Cut Size</th>
+                  <th className="px-3 py-2 font-semibold">Notes</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-50">
+                {row.cutting_specs.map((cs, i) => (
+                  <tr key={i}>
+                    <td className="px-3 py-2 text-slate-700">{cs.piece_name}</td>
+                    <td className="px-3 py-2 font-semibold text-slate-800">
+                      {cs.width_in}&quot; × {cs.height_in}&quot;
+                    </td>
+                    <td className="px-3 py-2 text-slate-500">{cs.notes ?? ""}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </details>
+      </td>
+    </tr>
+  );
+}
 
 export function SizeChart({ rows }: { rows: SizeChartRow[] }) {
   if (!rows?.length) return null;
@@ -30,30 +69,32 @@ export function SizeChart({ rows }: { rows: SizeChartRow[] }) {
           </thead>
           <tbody className="divide-y divide-slate-50">
             {rows.map((row, i) => (
-              <tr
-                key={i}
-                className={`transition-colors hover:bg-slate-50/50 ${
-                  row.size_name === "Custom" ? "bg-brand-blue-50/40 font-medium" : ""
-                }`}
-              >
-                <td className="px-4 py-3">
-                  <span className={`inline-block rounded-full px-2.5 py-0.5 text-xs font-bold ${
-                    row.size_name === "Custom"
-                      ? "bg-brand-blue-100 text-brand-blue-700"
-                      : "bg-slate-100 text-slate-700"
-                  }`}>
-                    {row.size_name}
-                  </span>
-                </td>
-                <td className="px-4 py-3 text-xs text-slate-600">
-                  {row.breed_examples.join(", ")}
-                </td>
-                <td className="px-4 py-3 text-center font-semibold text-slate-800">{row.chest_in}</td>
-                <td className="px-4 py-3 text-center font-semibold text-slate-800">{row.neck_in}</td>
-                <td className="px-4 py-3 text-center font-semibold text-slate-800">{row.back_in}</td>
-                <td className="px-4 py-3 text-center text-slate-600">{row.weight_lbs}</td>
-                <td className="px-4 py-3 text-xs text-slate-500">{row.notes}</td>
-              </tr>
+              <Fragment key={i}>
+                <tr
+                  className={`transition-colors hover:bg-slate-50/50 ${
+                    row.size_name === "Custom" ? "bg-brand-blue-50/40 font-medium" : ""
+                  }`}
+                >
+                  <td className="px-4 py-3">
+                    <span className={`inline-block rounded-full px-2.5 py-0.5 text-xs font-bold ${
+                      row.size_name === "Custom"
+                        ? "bg-brand-blue-100 text-brand-blue-700"
+                        : "bg-slate-100 text-slate-700"
+                    }`}>
+                      {row.size_name}
+                    </span>
+                  </td>
+                  <td className="px-4 py-3 text-xs text-slate-600">
+                    {row.breed_examples.join(", ")}
+                  </td>
+                  <td className="px-4 py-3 text-center font-semibold text-slate-800">{row.chest_in}</td>
+                  <td className="px-4 py-3 text-center font-semibold text-slate-800">{row.neck_in}</td>
+                  <td className="px-4 py-3 text-center font-semibold text-slate-800">{row.back_in}</td>
+                  <td className="px-4 py-3 text-center text-slate-600">{row.weight_lbs}</td>
+                  <td className="px-4 py-3 text-xs text-slate-500">{row.notes}</td>
+                </tr>
+                <CuttingSpecsRow row={row} />
+              </Fragment>
             ))}
           </tbody>
         </table>
