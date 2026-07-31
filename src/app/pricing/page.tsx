@@ -18,7 +18,7 @@ const FREE_FEATURES = [
 ];
 
 export default function PricingPage() {
-  const subscriptionPlans = PLANS.filter((p) => p.mode === "subscription");
+  const subscriptionPlans = PLANS.filter((p) => p.mode === "subscription" && p.id !== "free");
   const creditPacks = PLANS.filter((p) => p.mode === "payment");
 
   return (
