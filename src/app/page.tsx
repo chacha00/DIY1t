@@ -8,6 +8,7 @@ import { DiyVisionSection } from "@/components/landing/DiyVisionSection";
 import { SocialProof } from "@/components/landing/SocialProof";
 import { PricingTeaser } from "@/components/landing/PricingTeaser";
 import { DemoSection } from "@/components/landing/DemoSection";
+import { SeeItBuilt } from "@/components/landing/SeeItBuilt";
 import { FinalCtaV2 } from "@/components/landing/FinalCtaV2";
 
 export default function Home() {
@@ -20,6 +21,7 @@ export default function Home() {
         <DemoSection />
         <SavingsShowcase />
         <WhyDiy1tV2 />
+        <SeeItBuilt />
         <DiyVisionSection />
         <SocialProof />
         <PricingTeaser />

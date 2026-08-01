@@ -42,12 +42,12 @@ export const PLANS: PlanDefinition[] = [
     mode: "subscription",
     priceEnvVar: "STRIPE_PRICE_MONTHLY_UNLIMITED",
     features: [
-      "Unlimited projects — build as much as you want",
+      "Create unlimited custom DIY plans",
       "Stop overpaying: 8 cost-cutting variations per project",
-      "Profiles for every pet you own",
-      "Full project history so you can rebuild anything",
-      "Direct shopping links so you buy exactly what you need",
-      "Priority analysis — results in seconds, not minutes",
+      "Custom-fit patterns for every pet",
+      "Every project saved forever",
+      "One-click shopping lists with live cost estimates",
+      "Priority DIY Vision™ analysis — results in seconds, not minutes",
     ],
   },
   {
