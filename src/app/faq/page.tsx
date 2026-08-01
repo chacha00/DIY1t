@@ -11,19 +11,19 @@ const FAQS = [
     items: [
       {
         q: "How does DIY1T work?",
-        a: "Upload a photo of any pet item you want to recreate — a harness, bed, sweater, or toy. Our AI analyzes the image and generates a complete step-by-step DIY build plan including materials, pattern pieces, measurements, and instructions tailored to the construction method shown in the photo.",
+        a: "Upload a photo of any pet item you want to recreate — a harness, bed, sweater, or toy. DIY Vision™ analyzes the image and generates a complete step-by-step DIY build plan including materials, pattern pieces, measurements, and instructions tailored to the construction method shown in the photo.",
       },
       {
         q: "What kinds of items can I build?",
-        a: "Anything for pets — harnesses, vests, beds, blankets, toys, sweaters, coats, collars, and more. The AI detects whether the item is sewn, knitted, or crocheted and produces the appropriate instructions.",
+        a: "Anything for pets — harnesses, vests, beds, blankets, toys, sweaters, coats, collars, and more. DIY Vision™ detects whether the item is sewn, knitted, or crocheted and produces the appropriate instructions.",
       },
       {
         q: "Do I need sewing experience?",
-        a: "No. Projects are rated by difficulty from Beginner to Expert. Many projects include no-sew options using iron-on adhesive or Velcro. The AI adjusts its instructions based on the complexity of the item.",
+        a: "No. Projects are rated by difficulty from Beginner to Expert. Many projects include no-sew options using iron-on adhesive or Velcro. DIY Vision™ adjusts its instructions based on the complexity of the item.",
       },
       {
         q: "What photo should I upload?",
-        a: "Any clear photo of the item works — a product photo, a photo of your pet wearing it, or even a store screenshot. Phone photos are fine. The clearer the photo, the better the AI can detect the materials and construction method.",
+        a: "Any clear photo of the item works — a product photo, a photo of your pet wearing it, or even a store screenshot. Phone photos are fine. The clearer the photo, the better DIY Vision™ can detect the materials and construction method.",
       },
     ],
   },
@@ -53,11 +53,11 @@ const FAQS = [
     items: [
       {
         q: "Are the measurements accurate?",
-        a: "The AI generates measurements based on standard pet sizing and what is visible in the photo. We always recommend measuring your pet and comparing against the size chart included in each project before cutting any fabric.",
+        a: "DIY Vision™ generates measurements based on standard pet sizing and what is visible in the photo. We always recommend measuring your pet and comparing against the size chart included in each project before cutting any fabric.",
       },
       {
         q: "Can I customize the project for my pet's measurements?",
-        a: "Yes. Add your pet's profile (breed, weight, neck and chest measurements) in the Pets section of your dashboard. The AI will use those measurements to adjust the pattern.",
+        a: "Yes. Add your pet's profile (breed, weight, neck and chest measurements) in the Pets section of your dashboard. DIY Vision™ will use those measurements to adjust the pattern.",
       },
       {
         q: "Can I download the pattern as a PDF?",
@@ -73,8 +73,8 @@ const FAQS = [
     category: "Technical",
     items: [
       {
-        q: "What AI model powers DIY1T?",
-        a: "DIY1T uses GPT-4o with vision, which can analyze images and generate detailed structured build plans. The model looks at the actual visual content of your photo — not the filename — to determine materials and construction method.",
+        q: "What powers DIY Vision™?",
+        a: "DIY Vision™ is a specialized computer vision system trained exclusively on pet accessories, fabric construction, and sewing patterns. It looks at the actual visual content of your photo — not the filename — to determine materials and construction method.",
       },
       {
         q: "Is my photo stored?",

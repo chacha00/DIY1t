@@ -27,7 +27,7 @@ export default function Home() {
         <div className="bg-slate-50 py-6">
           <div className="mx-auto max-w-3xl px-4 text-center">
             <p className="text-xs leading-relaxed text-slate-400">
-              <strong className="text-slate-500">About our AI:</strong> DIY1T generates original DIY projects inspired by uploaded photos — it does not reproduce, trace, or copy copyrighted patterns, branded product designs, or trademarked items. Every plan is an AI-created original intended for personal use. Maker Pro plans include patterns cleared for commercial use and resale.
+              <strong className="text-slate-500">About DIY Vision™:</strong> DIY1T generates original DIY projects inspired by uploaded photos — it does not reproduce, trace, or copy copyrighted patterns, branded product designs, or trademarked items. Every plan is an original intended for personal use. Maker Pro plans include patterns cleared for commercial use and resale.
             </p>
           </div>
         </div>

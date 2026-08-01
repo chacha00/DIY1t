@@ -10,7 +10,7 @@ export function FinalCtaV2() {
           Your Next Favorite Pet Product<br />Is One Photo Away
         </h2>
         <p className="mt-4 text-lg text-white/70 leading-relaxed">
-          Start with three free AI projects. No credit card. No sewing experience required.
+          Start with three free projects powered by DIY Vision™. No credit card. No sewing experience required.
         </p>
         <div className="mt-8 flex flex-col items-center gap-3 sm:flex-row sm:justify-center">
           <Link

@@ -37,7 +37,7 @@ const PLANS = [
       "Unlimited pet profiles",
       "Project history & library",
       "Shopping links on every list",
-      "Priority AI generation",
+      "Priority DIY Vision™ analysis",
       "Maker's Planner (fabric stash, shopping list & project planner)",
     ],
     cta: "Start DIY+",

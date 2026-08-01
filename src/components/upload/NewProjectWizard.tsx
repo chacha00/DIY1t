@@ -92,7 +92,7 @@ export function NewProjectWizard({
       <Card className="p-6">
         <h2 className="text-base font-bold text-slate-900">Upload a Photo</h2>
         <p className="mt-1 text-sm text-slate-500">
-          Upload any photo — pet gear, furniture, clothing, decor. The AI will identify what it is and generate a full DIY plan.
+          Upload any photo — pet gear, furniture, clothing, decor. DIY Vision™ will identify what it is and generate a full DIY plan.
         </p>
         <div className="mt-5">
           <Dropzone onFileSelected={handleFileSelected} />

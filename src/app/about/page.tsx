@@ -6,7 +6,7 @@ import Link from "next/link";
 
 export const metadata: Metadata = {
   title: "About | DIY1T",
-  description: "Learn about DIY1T — the AI-powered platform that turns photos into step-by-step DIY pet project plans.",
+  description: "Learn about DIY1T — the platform that turns photos into step-by-step DIY pet project plans using DIY Vision™.",
 };
 
 export default function AboutPage() {
@@ -26,7 +26,7 @@ export default function AboutPage() {
               See It. Build It. Make It Yourself.
             </h1>
             <p className="mt-4 text-lg leading-relaxed text-slate-500">
-              DIY1T is an AI-powered platform that turns any photo of a pet item into a complete, step-by-step DIY build plan — so anyone can make quality pet gear on a budget.
+              DIY1T uses DIY Vision™ to turn any photo of a pet item into a complete, step-by-step DIY build plan — so anyone can make quality pet gear on a budget.
             </p>
           </div>
 
@@ -49,8 +49,8 @@ export default function AboutPage() {
                 {
                   icon: <Zap className="h-5 w-5 text-brand-blue-600" />,
                   bg: "bg-brand-blue-100",
-                  title: "AI-Powered Analysis",
-                  body: "Our AI examines your photo to identify the construction method — sewing, knitting, or crochet — and generates instructions that match exactly what is in the image.",
+                  title: "DIY Vision™ Analysis",
+                  body: "DIY Vision™ examines your photo to identify the construction method — sewing, knitting, or crochet — and generates instructions that match exactly what is in the image.",
                 },
                 {
                   icon: <Scissors className="h-5 w-5 text-brand-teal-600" />,
@@ -62,7 +62,7 @@ export default function AboutPage() {
                   icon: <Heart className="h-5 w-5 text-brand-orange-600" />,
                   bg: "bg-brand-orange-100",
                   title: "Made for Pet Owners",
-                  body: "Add your pet&apos;s measurements and the AI customizes the pattern to fit. From harnesses to beds to sweaters — if it exists, you can build it.",
+                  body: "Add your pet&apos;s measurements and DIY Vision™ customizes the pattern to fit. From harnesses to beds to sweaters — if it exists, you can build it.",
                 },
                 {
                   icon: <Hammer className="h-5 w-5 text-slate-600" />,
