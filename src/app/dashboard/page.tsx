@@ -126,10 +126,10 @@ export default async function DashboardPage() {
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="text-2xl font-extrabold tracking-tight text-slate-900">
-            Welcome back{firstName ? `, ${firstName}` : ""}! 🎉
+            Ready to build something new? 🛠️
           </h1>
           <p className="mt-1 text-sm text-slate-500">
-            DIY Vision™ is ready to analyze your next project.
+            DIY Vision™ is standing by.
           </p>
         </div>
         <LinkButton href="/dashboard/new" size="md">
