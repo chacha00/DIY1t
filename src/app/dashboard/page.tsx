@@ -256,37 +256,82 @@ export default async function DashboardPage() {
         </div>
       </div>
 
-      {/* ── Continue last project ── */}
-      {lastProject ? (
-        <div className="rounded-[20px] border-2 border-brand-blue-100 bg-brand-blue-50 p-5">
-          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-            <div className="flex-1 min-w-0">
-              <p className="text-[10px] font-bold uppercase tracking-widest text-brand-blue-500 mb-1">Continue Your Last Project</p>
-              <p className="text-base font-extrabold text-slate-900 truncate">{lastProject.title}</p>
-              <div className="mt-3 flex items-center gap-3">
-                <div className="flex-1 h-2 overflow-hidden rounded-full bg-brand-blue-200">
-                  <div
-                    className="h-full rounded-full bg-gradient-to-r from-brand-blue-400 to-brand-blue-600 transition-all"
-                    style={{ width: `${lastProjectProgress}%` }}
-                  />
+      {/* ── Continue Building ── */}
+      <div>
+        <h2 className="mb-3 text-xs font-bold uppercase tracking-widest text-slate-400">Continue Building</h2>
+        {lastProject ? (
+          <div className="rounded-[20px] border-2 border-brand-blue-100 bg-brand-blue-50 p-5">
+            <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+              <div className="flex-1 min-w-0">
+                <p className="text-[10px] font-bold uppercase tracking-widest text-brand-blue-500 mb-1">
+                  Pick up where you left off
+                </p>
+                <p className="text-base font-extrabold text-slate-900 truncate">{lastProject.title}</p>
+
+                {/* Step progress */}
+                <div className="mt-2 flex items-center gap-2 text-xs text-slate-500">
+                  <CheckCircle2 className="h-3.5 w-3.5 text-ds-emerald-500 shrink-0" />
+                  <span><strong className="text-slate-700">4 of 9</strong> steps completed</span>
+                  <span className="text-slate-300">·</span>
+                  <Clock className="h-3.5 w-3.5 text-slate-400 shrink-0" />
+                  <span>Est. <strong className="text-slate-700">1hr 20min</strong> remaining</span>
                 </div>
-                <span className="text-xs font-bold text-brand-blue-600 shrink-0">{lastProjectProgress}% complete</span>
+
+                {/* Bar */}
+                <div className="mt-3 flex items-center gap-3">
+                  <div className="flex-1 h-2 overflow-hidden rounded-full bg-brand-blue-200">
+                    <div
+                      className="h-full rounded-full bg-gradient-to-r from-brand-blue-400 to-brand-blue-600 transition-all"
+                      style={{ width: `${lastProjectProgress}%` }}
+                    />
+                  </div>
+                  <span className="text-xs font-bold text-brand-blue-600 shrink-0">{lastProjectProgress}% complete</span>
+                </div>
               </div>
+              <Link
+                href={`/dashboard/projects/${lastProject.id}`}
+                className="inline-flex items-center gap-2 rounded-xl bg-brand-blue-600 px-5 py-2.5 text-sm font-bold text-white hover:bg-brand-blue-700 transition-colors shrink-0"
+              >
+                Continue Build
+                <ArrowRight className="h-4 w-4" />
+              </Link>
             </div>
-            <Link
-              href={`/dashboard/projects/${lastProject.id}`}
-              className="inline-flex items-center gap-2 rounded-xl bg-brand-blue-600 px-5 py-2.5 text-sm font-bold text-white hover:bg-brand-blue-700 transition-colors shrink-0"
-            >
-              Continue
-              <ArrowRight className="h-4 w-4" />
-            </Link>
           </div>
-        </div>
-      ) : (
-        <div className="rounded-[20px] border-2 border-dashed border-slate-200 bg-white p-5 text-center">
-          <p className="text-sm text-slate-400">No projects in progress — start one below 👇</p>
-        </div>
-      )}
+        ) : (
+          /* No project in progress — prompt them to start one */
+          <div className="rounded-[20px] border border-slate-100 bg-white p-6">
+            <div className="flex flex-col gap-5 sm:flex-row sm:items-center">
+              <div className="flex-1">
+                <p className="text-base font-extrabold text-slate-900">Start your next build</p>
+                <p className="mt-1 text-sm text-slate-500">
+                  Choose one of your recently generated plans and track each step as you build.
+                </p>
+              </div>
+              {recentProjects && recentProjects.length > 0 ? (
+                <div className="flex flex-wrap gap-2 sm:shrink-0">
+                  {recentProjects.slice(0, 3).map((p) => (
+                    <Link
+                      key={p.id}
+                      href={`/dashboard/projects/${p.id}`}
+                      className="flex items-center gap-1.5 rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-semibold text-slate-700 hover:border-brand-blue-300 hover:bg-brand-blue-50 hover:text-brand-blue-700 transition-colors"
+                    >
+                      🛠️ {p.title.length > 22 ? p.title.slice(0, 22) + "…" : p.title}
+                    </Link>
+                  ))}
+                </div>
+              ) : (
+                <Link
+                  href="/dashboard/new"
+                  className="inline-flex items-center gap-2 rounded-xl bg-brand-blue-600 px-4 py-2.5 text-sm font-bold text-white hover:bg-brand-blue-700 transition-colors shrink-0"
+                >
+                  <Sparkles className="h-4 w-4" />
+                  Generate a plan
+                </Link>
+              )}
+            </div>
+          </div>
+        )}
+      </div>
 
       {/* ── Quick Actions ── */}
       <div>
