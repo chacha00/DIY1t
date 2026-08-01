@@ -19,7 +19,7 @@ export function Topbar({
   return (
     <header className="glass sticky top-0 z-30 flex h-16 items-center justify-between border-b border-slate-100/80 px-4 sm:px-6 lg:px-8">
       <p className="text-sm font-semibold text-slate-500">
-        Welcome back<span className="hidden sm:inline">, {name || "maker"}</span> 👋
+        My Workshop
       </p>
 
       <div className="flex items-center gap-3">
