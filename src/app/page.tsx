@@ -1,33 +1,27 @@
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
-import { Hero } from "@/components/landing/Hero";
-import { Examples } from "@/components/landing/Examples";
-import { HowItWorks } from "@/components/landing/HowItWorks";
-import { WhyDiy1t } from "@/components/landing/WhyDiy1t";
-import { Customization } from "@/components/landing/Customization";
-import { PetProfilesTeaser } from "@/components/landing/PetProfilesTeaser";
+import { HeroV2 } from "@/components/landing/HeroV2";
+import { TrustedBy } from "@/components/landing/TrustedBy";
+import { SavingsShowcase } from "@/components/landing/SavingsShowcase";
+import { WhyDiy1tV2 } from "@/components/landing/WhyDiy1tV2";
+import { DiyVisionSection } from "@/components/landing/DiyVisionSection";
 import { SocialProof } from "@/components/landing/SocialProof";
-import { ComparisonTable } from "@/components/landing/ComparisonTable";
 import { PricingTeaser } from "@/components/landing/PricingTeaser";
-import { EmailCapture } from "@/components/landing/EmailCapture";
-import { CtaBanner } from "@/components/landing/CtaBanner";
+import { FinalCtaV2 } from "@/components/landing/FinalCtaV2";
 
 export default function Home() {
   return (
     <>
       <Header />
       <main className="flex-1">
-        <Hero />
-        <Examples />
-        <HowItWorks />
-        <WhyDiy1t />
-        <Customization />
-        <PetProfilesTeaser />
+        <HeroV2 />
+        <TrustedBy />
+        <SavingsShowcase />
+        <WhyDiy1tV2 />
+        <DiyVisionSection />
         <SocialProof />
-        <ComparisonTable />
         <PricingTeaser />
 
-        {/* AI Limitations note */}
         <div className="bg-slate-50 py-6">
           <div className="mx-auto max-w-3xl px-4 text-center">
             <p className="text-xs leading-relaxed text-slate-400">
@@ -36,8 +30,7 @@ export default function Home() {
           </div>
         </div>
 
-        <EmailCapture />
-        <CtaBanner />
+        <FinalCtaV2 />
       </main>
       <Footer />
     </>

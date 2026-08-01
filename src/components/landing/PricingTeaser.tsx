@@ -77,7 +77,7 @@ export function PricingTeaser() {
         <SectionHeading
           eyebrow="Pricing"
           title="Plans for every maker"
-          description="Start free. Upgrade when you're ready to build without limits."
+          description="Most members save enough on their first project to pay for an entire year of DIY1T."
         />
 
         <div className="mt-14 grid gap-6 lg:grid-cols-3">

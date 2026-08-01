@@ -7,11 +7,11 @@ import { Container } from "@/components/ui/Container";
 import { LinkButton } from "@/components/ui/Button";
 
 const NAV_LINKS = [
-  { label: "How It Works", href: "/#how-it-works" },
+  { label: "Features", href: "/#features" },
   { label: "Examples", href: "/#examples" },
-  { label: "Blog", href: "/blog" },
-  { label: "Community", href: "/community" },
   { label: "Pricing", href: "/pricing" },
+  { label: "Community", href: "/community" },
+  { label: "Blog", href: "/blog" },
 ];
 
 export function Header() {
