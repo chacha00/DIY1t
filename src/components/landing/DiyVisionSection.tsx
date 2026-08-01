@@ -16,7 +16,7 @@ export function DiyVisionSection() {
         <div className="grid items-center gap-12 lg:grid-cols-2">
           {/* Left */}
           <div>
-            <p className="text-sm font-semibold uppercase tracking-widest text-brand-blue-600">AI Technology</p>
+            <p className="text-sm font-semibold uppercase tracking-widest text-brand-blue-600">Powered by DIY Vision™</p>
             <h2 className="mt-2 text-3xl font-extrabold tracking-tight text-slate-900 sm:text-4xl">
               Meet DIY Vision™
             </h2>

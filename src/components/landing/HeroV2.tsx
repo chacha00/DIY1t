@@ -5,11 +5,11 @@ import Link from "next/link";
 import { Star, ArrowRight, Play } from "lucide-react";
 
 const STEPS = [
-  { label: "Photo uploaded", icon: "📸", delay: 0 },
-  { label: "AI detects seams", icon: "🔍", delay: 900 },
-  { label: "Measuring dimensions", icon: "📐", delay: 1800 },
-  { label: "Pattern generated", icon: "✂️", delay: 2700 },
-  { label: "Materials listed", icon: "🧵", delay: 3600 },
+  { label: "Photo uploaded", icon: "📸", delay: 0, thinking: "" },
+  { label: "Looking closely at the stitching...", icon: "🔍", delay: 900, thinking: "DIY Vision™" },
+  { label: "Figuring out how this was built...", icon: "📐", delay: 1800, thinking: "DIY Vision™" },
+  { label: "Calculating the least expensive way to recreate it...", icon: "💰", delay: 2700, thinking: "DIY Vision™" },
+  { label: "Pattern & materials ready!", icon: "✂️", delay: 3600, thinking: "" },
 ];
 
 export function HeroV2() {
@@ -51,7 +51,7 @@ export function HeroV2() {
           <div>
             <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-brand-orange-200 bg-brand-orange-50 px-3 py-1 text-xs font-semibold text-brand-orange-700">
               <span className="h-1.5 w-1.5 rounded-full bg-brand-orange-500 animate-pulse" />
-              AI-Powered Pet DIY — Free to Start
+              Powered by DIY Vision™ — Free to Start
             </div>
 
             <h1 className="text-4xl font-extrabold leading-tight tracking-tight text-slate-900 sm:text-5xl lg:text-[3.25rem]">
@@ -97,9 +97,11 @@ export function HeroV2() {
                 <strong className="text-slate-700">4.9/5</strong> rating
               </span>
               <span className="h-3 w-px bg-slate-200" />
-              <span><strong className="text-slate-700">12,000+</strong> DIY projects generated</span>
+              <span><strong className="text-slate-700">12,000+</strong> projects generated</span>
               <span className="h-3 w-px bg-slate-200" />
               <span>Average savings <strong className="text-slate-700">$47/project</strong></span>
+              <span className="h-3 w-px bg-slate-200" />
+              <span><strong className="text-brand-blue-600">$184,000+</strong> saved by members</span>
             </div>
           </div>
 
@@ -120,9 +122,14 @@ export function HeroV2() {
                     }`}
                   >
                     <span className="text-lg">{step.icon}</span>
-                    <span className={`text-sm font-semibold ${i === activeStep ? "text-brand-blue-700" : "text-slate-600"}`}>
-                      {step.label}
-                    </span>
+                    <div className="flex flex-col min-w-0">
+                      {step.thinking && i === activeStep && (
+                        <span className="text-[9px] font-bold uppercase tracking-widest text-brand-blue-400 mb-0.5">{step.thinking}</span>
+                      )}
+                      <span className={`text-sm font-semibold leading-snug ${i === activeStep ? "text-brand-blue-700" : "text-slate-600"}`}>
+                        {step.label}
+                      </span>
+                    </div>
                     {i < activeStep && <span className="ml-auto text-brand-teal-500 text-xs font-bold">✓</span>}
                     {i === activeStep && (
                       <span className="ml-auto flex gap-0.5">
