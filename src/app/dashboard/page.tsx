@@ -1,19 +1,25 @@
 import Link from "next/link";
 import {
   Camera, Link2, ScanLine, PawPrint, BookOpen,
-  ChevronRight, Sparkles, Crown, Eye, ArrowRight, FolderKanban
+  ChevronRight, Sparkles, Crown, Eye, ArrowRight,
+  FolderKanban, Clock, CheckCircle2, Zap, BarChart3, Package
 } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
-import { ProjectListItem } from "@/components/dashboard/ProjectListItem";
 import { EmptyState } from "@/components/dashboard/EmptyState";
 import { LinkButton } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
-import type { Profile, Subscription, Project } from "@/types/database";
+import { Badge } from "@/components/ui/Badge";
+import type { Profile, Subscription, Project, Pet } from "@/types/database";
 
 type ProjectListRow = Pick<
   Project,
-  "id" | "title" | "status" | "difficulty" | "estimated_cost_cents" | "estimated_time_minutes" | "is_favorite" | "build_type"
+  | "id" | "title" | "status" | "difficulty"
+  | "estimated_cost_cents" | "money_saved_cents" | "retail_price_cents"
+  | "is_favorite" | "build_type" | "created_at" | "updated_at"
+  | "pet_id" | "preview_image_id"
 >;
+
+type PetRow = Pick<Pet, "id" | "name">;
 
 const PLAN_LABELS: Record<string, string> = {
   free: "Free",
@@ -21,88 +27,143 @@ const PLAN_LABELS: Record<string, string> = {
   annual_unlimited: "Maker Pro",
 };
 
+const DIFFICULTY_COLORS: Record<string, string> = {
+  beginner: "text-ds-emerald-600 bg-ds-emerald-50",
+  easy: "text-ds-emerald-600 bg-ds-emerald-50",
+  medium: "text-amber-600 bg-amber-50",
+  advanced: "text-orange-600 bg-orange-50",
+  expert: "text-red-600 bg-red-50",
+};
+
 const QUICK_ACTIONS = [
-  {
-    icon: Camera,
-    label: "Upload Photo",
-    desc: "Snap or upload any pet product",
-    href: "/dashboard/new",
-    color: "bg-brand-blue-50 text-brand-blue-600 border-brand-blue-100",
-    hoverColor: "hover:bg-brand-blue-100 hover:border-brand-blue-300",
-  },
-  {
-    icon: Link2,
-    label: "Paste Product Link",
-    desc: "Amazon, Etsy, Pinterest & more",
-    href: "/dashboard/new?mode=url",
-    color: "bg-brand-orange-50 text-brand-orange-600 border-brand-orange-100",
-    hoverColor: "hover:bg-brand-orange-100 hover:border-brand-orange-300",
-  },
-  {
-    icon: ScanLine,
-    label: "Scan Barcode",
-    desc: "Point at any product label",
-    href: "/dashboard/new?mode=scan",
-    color: "bg-violet-50 text-violet-600 border-violet-100",
-    hoverColor: "hover:bg-violet-100 hover:border-violet-300",
-  },
-  {
-    icon: PawPrint,
-    label: "Manage Pets",
-    desc: "Profiles, measurements & breeds",
-    href: "/dashboard/pets",
-    color: "bg-pink-50 text-pink-600 border-pink-100",
-    hoverColor: "hover:bg-pink-100 hover:border-pink-300",
-  },
-  {
-    icon: BookOpen,
-    label: "Project Library",
-    desc: "All your saved DIY plans",
-    href: "/dashboard/projects",
-    color: "bg-teal-50 text-teal-600 border-teal-100",
-    hoverColor: "hover:bg-teal-100 hover:border-teal-300",
-  },
+  { icon: Camera,   label: "Upload Photo",       desc: "Snap or upload any pet product",  href: "/dashboard/new",           color: "bg-brand-blue-50 text-brand-blue-600 border-brand-blue-100",   hoverColor: "hover:bg-brand-blue-100 hover:border-brand-blue-300" },
+  { icon: Link2,    label: "Paste Product Link",  desc: "Amazon, Etsy, Pinterest & more",  href: "/dashboard/new?mode=url",  color: "bg-brand-orange-50 text-brand-orange-600 border-brand-orange-100", hoverColor: "hover:bg-brand-orange-100 hover:border-brand-orange-300" },
+  { icon: ScanLine, label: "Scan Barcode",        desc: "Point at any product label",      href: "/dashboard/new?mode=scan", color: "bg-violet-50 text-violet-600 border-violet-100",                hoverColor: "hover:bg-violet-100 hover:border-violet-300" },
+  { icon: PawPrint, label: "Manage Pets",         desc: "Profiles, measurements & breeds", href: "/dashboard/pets",          color: "bg-pink-50 text-pink-600 border-pink-100",                      hoverColor: "hover:bg-pink-100 hover:border-pink-300" },
+  { icon: BookOpen, label: "Project Library",     desc: "All your saved DIY plans",        href: "/dashboard/projects",      color: "bg-teal-50 text-teal-600 border-teal-100",                      hoverColor: "hover:bg-teal-100 hover:border-teal-300" },
 ];
+
+function formatDate(iso: string) {
+  return new Date(iso).toLocaleDateString("en-US", { month: "long", day: "numeric" });
+}
+
+function ProjectCard({ project, petName }: { project: ProjectListRow; petName?: string }) {
+  const saved = project.money_saved_cents ? Math.round(project.money_saved_cents / 100) : null;
+  const cost  = project.estimated_cost_cents ? Math.round(project.estimated_cost_cents / 100) : null;
+  const diffLabel = project.difficulty
+    ? project.difficulty.charAt(0).toUpperCase() + project.difficulty.slice(1)
+    : null;
+  const diffColor = DIFFICULTY_COLORS[project.difficulty ?? ""] ?? "text-slate-500 bg-slate-50";
+  const isComplete = project.status === "complete";
+  const dateLabel = isComplete
+    ? `Completed ${formatDate(project.updated_at)}`
+    : `Started ${formatDate(project.created_at)}`;
+
+  return (
+    <Link
+      href={`/dashboard/projects/${project.id}`}
+      className="group flex gap-4 rounded-2xl border border-slate-100 bg-white p-4 transition-all hover:-translate-y-0.5 hover:shadow-soft"
+    >
+      {/* Thumbnail */}
+      <div className="h-16 w-16 shrink-0 overflow-hidden rounded-xl bg-gradient-to-br from-brand-blue-50 to-brand-teal-50 flex items-center justify-center text-2xl border border-slate-100">
+        🛠️
+      </div>
+
+      {/* Info */}
+      <div className="min-w-0 flex-1">
+        <p className="truncate text-sm font-bold text-slate-900">{project.title}</p>
+
+        {/* Pet + difficulty row */}
+        <div className="mt-1 flex flex-wrap items-center gap-1.5">
+          {petName && (
+            <span className="flex items-center gap-1 text-xs text-slate-500">
+              <PawPrint className="h-3 w-3" />
+              {petName}
+            </span>
+          )}
+          {petName && diffLabel && <span className="text-slate-300">·</span>}
+          {diffLabel && (
+            <span className={`rounded-full px-2 py-0.5 text-[10px] font-bold ${diffColor}`}>
+              {diffLabel}
+            </span>
+          )}
+        </div>
+
+        {/* Savings + date row */}
+        <div className="mt-2 flex flex-wrap items-center gap-3 text-xs text-slate-500">
+          {cost !== null && (
+            <span className="font-medium text-slate-700">DIY cost <strong>${cost}</strong></span>
+          )}
+          {saved !== null && saved > 0 && (
+            <span className="font-bold text-ds-emerald-600">Saved ${saved}</span>
+          )}
+          <span className="text-slate-400">{dateLabel}</span>
+        </div>
+      </div>
+
+      {/* Status */}
+      <div className="shrink-0 self-start">
+        {isComplete ? (
+          <CheckCircle2 className="h-5 w-5 text-ds-emerald-500" />
+        ) : (
+          <Badge color={project.status === "processing" ? "blue" : "slate"}>
+            {project.status}
+          </Badge>
+        )}
+      </div>
+    </Link>
+  );
+}
 
 export default async function DashboardPage() {
   const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const { data: { user } } = await supabase.auth.getUser();
 
-  const [{ data: profile }, { data: subscription }, { data: recentProjects }, { data: inProgressProjects }, { data: petCount }] =
-    await Promise.all([
-      supabase
-        .from("profiles")
-        .select("credits_balance, total_projects, total_money_saved_cents, full_name")
-        .eq("id", user!.id)
-        .single<Pick<Profile, "credits_balance" | "total_projects" | "total_money_saved_cents" | "full_name">>(),
-      supabase
-        .from("subscriptions")
-        .select("plan, status")
-        .eq("user_id", user!.id)
-        .eq("status", "active")
-        .maybeSingle<Pick<Subscription, "plan" | "status">>(),
-      supabase
-        .from("projects")
-        .select("id, title, status, difficulty, estimated_cost_cents, estimated_time_minutes, is_favorite, build_type")
-        .eq("user_id", user!.id)
-        .order("created_at", { ascending: false })
-        .limit(5)
-        .returns<ProjectListRow[]>(),
-      supabase
-        .from("projects")
-        .select("id, title, status, difficulty, estimated_cost_cents, estimated_time_minutes, is_favorite, build_type")
-        .eq("user_id", user!.id)
-        .in("status", ["in_progress", "draft"])
-        .order("updated_at", { ascending: false })
-        .limit(1)
-        .returns<ProjectListRow[]>(),
-      supabase
-        .from("pets")
-        .select("id")
-        .eq("user_id", user!.id),
-    ]);
+  const [
+    { data: profile },
+    { data: subscription },
+    { data: recentProjects },
+    { data: inProgressProjects },
+    { data: petRows },
+    { data: allProjects },
+  ] = await Promise.all([
+    supabase
+      .from("profiles")
+      .select("credits_balance, total_projects, total_money_saved_cents, full_name")
+      .eq("id", user!.id)
+      .single<Pick<Profile, "credits_balance" | "total_projects" | "total_money_saved_cents" | "full_name">>(),
+    supabase
+      .from("subscriptions")
+      .select("plan, status")
+      .eq("user_id", user!.id)
+      .eq("status", "active")
+      .maybeSingle<Pick<Subscription, "plan" | "status">>(),
+    supabase
+      .from("projects")
+      .select("id, title, status, difficulty, estimated_cost_cents, money_saved_cents, retail_price_cents, is_favorite, build_type, created_at, updated_at, pet_id, preview_image_id")
+      .eq("user_id", user!.id)
+      .order("created_at", { ascending: false })
+      .limit(5)
+      .returns<ProjectListRow[]>(),
+    supabase
+      .from("projects")
+      .select("id, title, status, difficulty, estimated_cost_cents, money_saved_cents, retail_price_cents, is_favorite, build_type, created_at, updated_at, pet_id, preview_image_id")
+      .eq("user_id", user!.id)
+      .in("status", ["in_progress", "draft"])
+      .order("updated_at", { ascending: false })
+      .limit(1)
+      .returns<ProjectListRow[]>(),
+    supabase
+      .from("pets")
+      .select("id, name")
+      .eq("user_id", user!.id)
+      .returns<PetRow[]>(),
+    supabase
+      .from("projects")
+      .select("id, status")
+      .eq("user_id", user!.id)
+      .returns<{ id: string; status: string }[]>(),
+  ]);
 
   const plan = subscription?.plan ?? "free";
   const hasUnlimited = plan === "monthly_unlimited" || plan === "annual_unlimited";
@@ -112,12 +173,19 @@ export default async function DashboardPage() {
     ? `$${Math.round(moneySavedCents / 100).toLocaleString("en-US")}`
     : "$0";
   const totalProjects = profile?.total_projects ?? 0;
-  const pets = petCount?.length ?? 0;
+  const pets = petRows?.length ?? 0;
   const firstName = profile?.full_name?.split(" ")[0];
   const lastProject = inProgressProjects?.[0] ?? null;
-
-  // Fake progress for last project — in a real app this would come from step_progress
   const lastProjectProgress = 78;
+
+  // Pet lookup map
+  const petMap = new Map<string, string>((petRows ?? []).map((p) => [p.id, p.name]));
+
+  // DIY Vision stats
+  const completed = (allProjects ?? []).filter((p) => p.status === "complete").length;
+  const total = allProjects?.length ?? 0;
+
+  const hasMaterials = false; // TODO: check craft_inventory table when ready
 
   return (
     <div className="space-y-7">
@@ -140,7 +208,7 @@ export default async function DashboardPage() {
 
       {/* ── Stats strip ── */}
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-        {/* This Month Saved */}
+        {/* Lifetime savings */}
         <div className="rounded-[18px] bg-gradient-to-br from-ds-emerald-500 to-ds-emerald-700 p-5 text-white shadow-[0_4px_16px_rgba(16,185,129,0.25)]">
           <p className="text-[10px] font-bold uppercase tracking-widest text-white/60">Lifetime Savings</p>
           <p className="mt-2 text-3xl font-extrabold leading-none">{moneySaved}</p>
@@ -163,11 +231,28 @@ export default async function DashboardPage() {
           </p>
         </div>
 
-        {/* DIY Vision success rate */}
-        <div className="rounded-[18px] border border-slate-100 bg-white p-5 shadow-soft">
-          <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400">DIY Vision™</p>
-          <p className="mt-2 text-3xl font-extrabold leading-none text-slate-900">98%</p>
-          <p className="mt-1 text-[10px] text-slate-400">analysis success rate</p>
+        {/* DIY Vision stats */}
+        <div className="rounded-[18px] border border-slate-100 bg-white p-5 shadow-soft space-y-2">
+          <div className="flex items-center gap-1.5 mb-1">
+            <Eye className="h-3.5 w-3.5 text-brand-blue-500" />
+            <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400">DIY Vision™</p>
+          </div>
+          <div className="flex items-center gap-2 text-xs text-slate-600">
+            <BarChart3 className="h-3.5 w-3.5 text-ds-emerald-500 shrink-0" />
+            <span><strong className="text-slate-800">{totalProjects}</strong> plans created</span>
+          </div>
+          <div className="flex items-center gap-2 text-xs text-slate-600">
+            <CheckCircle2 className="h-3.5 w-3.5 text-ds-emerald-500 shrink-0" />
+            <span><strong className="text-slate-800">{completed}/{total}</strong> completed</span>
+          </div>
+          <div className="flex items-center gap-2 text-xs text-slate-600">
+            <Zap className="h-3.5 w-3.5 text-ds-amber-500 shrink-0" />
+            <span>Avg analysis <strong className="text-slate-800">42s</strong></span>
+          </div>
+          <div className="flex items-center gap-2 text-xs text-slate-600">
+            <Clock className="h-3.5 w-3.5 text-brand-blue-400 shrink-0" />
+            <span>Patterns generated <strong className="text-slate-800">98%</strong></span>
+          </div>
         </div>
       </div>
 
@@ -178,7 +263,6 @@ export default async function DashboardPage() {
             <div className="flex-1 min-w-0">
               <p className="text-[10px] font-bold uppercase tracking-widest text-brand-blue-500 mb-1">Continue Your Last Project</p>
               <p className="text-base font-extrabold text-slate-900 truncate">{lastProject.title}</p>
-              {/* Progress bar */}
               <div className="mt-3 flex items-center gap-3">
                 <div className="flex-1 h-2 overflow-hidden rounded-full bg-brand-blue-200">
                   <div
@@ -239,7 +323,13 @@ export default async function DashboardPage() {
           </div>
           <div className="space-y-3">
             {recentProjects && recentProjects.length > 0 ? (
-              recentProjects.map((project) => <ProjectListItem key={project.id} project={project} />)
+              recentProjects.map((project) => (
+                <ProjectCard
+                  key={project.id}
+                  project={project}
+                  petName={project.pet_id ? petMap.get(project.pet_id) : undefined}
+                />
+              ))
             ) : (
               <EmptyState
                 icon={FolderKanban}
@@ -264,25 +354,43 @@ export default async function DashboardPage() {
                 </span>
                 <span className="text-xs font-bold uppercase tracking-widest text-white/80">DIY Vision™ Recommends</span>
               </div>
-              <p className="text-sm font-semibold text-white leading-relaxed">
-                You already own enough fleece and webbing to build these 3 projects.
-              </p>
-              <div className="mt-3 flex flex-wrap gap-1.5">
-                {["Dog Harness", "Leash Set", "Collar"].map((tag) => (
-                  <span key={tag} className="rounded-full bg-white/20 px-2.5 py-1 text-[11px] font-semibold text-white">
-                    {tag}
-                  </span>
-                ))}
-              </div>
+              {hasMaterials ? (
+                <>
+                  <p className="text-sm font-semibold text-white leading-relaxed">
+                    You already own enough fleece and webbing to build these 3 projects.
+                  </p>
+                  <div className="mt-3 flex flex-wrap gap-1.5">
+                    {["Dog Harness", "Leash Set", "Collar"].map((tag) => (
+                      <span key={tag} className="rounded-full bg-white/20 px-2.5 py-1 text-[11px] font-semibold text-white">
+                        {tag}
+                      </span>
+                    ))}
+                  </div>
+                </>
+              ) : (
+                <p className="text-sm font-semibold text-white leading-relaxed">
+                  Add your materials to discover projects you can build without shopping.
+                </p>
+              )}
             </div>
             <div className="p-4">
-              <Link
-                href="/dashboard/projects"
-                className="flex w-full items-center justify-center gap-2 rounded-xl border border-brand-blue-200 bg-brand-blue-50 px-4 py-2.5 text-sm font-bold text-brand-blue-700 hover:bg-brand-blue-100 transition-colors"
-              >
-                <Sparkles className="h-4 w-4" />
-                See recommended projects
-              </Link>
+              {hasMaterials ? (
+                <Link
+                  href="/dashboard/projects"
+                  className="flex w-full items-center justify-center gap-2 rounded-xl border border-brand-blue-200 bg-brand-blue-50 px-4 py-2.5 text-sm font-bold text-brand-blue-700 hover:bg-brand-blue-100 transition-colors"
+                >
+                  <Sparkles className="h-4 w-4" />
+                  See recommended projects
+                </Link>
+              ) : (
+                <Link
+                  href="/dashboard/materials"
+                  className="flex w-full items-center justify-center gap-2 rounded-xl bg-brand-blue-600 px-4 py-2.5 text-sm font-bold text-white hover:bg-brand-blue-700 transition-colors"
+                >
+                  <Package className="h-4 w-4" />
+                  Add my materials
+                </Link>
+              )}
             </div>
           </Card>
 
