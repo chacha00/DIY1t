@@ -108,7 +108,9 @@ export default async function DashboardPage() {
   const hasUnlimited = plan === "monthly_unlimited" || plan === "annual_unlimited";
   const planLabel = PLAN_LABELS[plan];
   const moneySavedCents = profile?.total_money_saved_cents ?? 0;
-  const moneySaved = moneySavedCents >= 100 ? `$${(moneySavedCents / 100).toFixed(0)}` : "$0";
+  const moneySaved = moneySavedCents >= 100
+    ? `$${Math.round(moneySavedCents / 100).toLocaleString("en-US")}`
+    : "$0";
   const totalProjects = profile?.total_projects ?? 0;
   const pets = petCount?.length ?? 0;
   const firstName = profile?.full_name?.split(" ")[0];
@@ -140,7 +142,7 @@ export default async function DashboardPage() {
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
         {/* This Month Saved */}
         <div className="rounded-[18px] bg-gradient-to-br from-ds-emerald-500 to-ds-emerald-700 p-5 text-white shadow-[0_4px_16px_rgba(16,185,129,0.25)]">
-          <p className="text-[10px] font-bold uppercase tracking-widest text-white/60">This Month Saved</p>
+          <p className="text-[10px] font-bold uppercase tracking-widest text-white/60">Lifetime Savings</p>
           <p className="mt-2 text-3xl font-extrabold leading-none">{moneySaved}</p>
           <p className="mt-1 text-[10px] text-white/50">vs. buying retail</p>
         </div>
