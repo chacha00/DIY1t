@@ -129,7 +129,7 @@ export default async function DashboardPage() {
             Ready to build something new? 🛠️
           </h1>
           <p className="mt-1 text-sm text-slate-500">
-            DIY Vision™ is standing by.
+            DIY Vision™ is ready to analyze your next project.
           </p>
         </div>
         <LinkButton href="/dashboard/new" size="md">
