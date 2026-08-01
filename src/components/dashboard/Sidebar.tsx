@@ -66,19 +66,21 @@ export function Sidebar({ plan, creditsLeft, usedThisMonth, monthlyLimit, totalP
   const usagePct = Math.min(100, Math.round((used / monthlyLimit) * 100));
   const usageNearLimit = used >= monthlyLimit - 1;
 
-  // Personalised upgrade headline
-  let upgradeHeadline = "Go unlimited";
-  let upgradeBody = "Upgrade to keep generating custom DIY plans and save every project forever.";
+  // Personalised upgrade headline — always reflects the user's actual activity
+  let upgradeHeadline: string;
+  let upgradeBody: string;
 
-  if (totalProjects >= 17) {
-    upgradeHeadline = `You've created ${totalProjects} projects!`;
-    upgradeBody = "Upgrade to keep generating unlimited custom plans, save every project, and unlock Maker's Planner.";
-  } else if (used >= monthlyLimit) {
-    upgradeHeadline = "You've hit your limit";
+  if (used >= monthlyLimit) {
+    upgradeHeadline = totalProjects > 0
+      ? `You've created ${totalProjects} projects — and hit your limit`
+      : "You've hit your limit";
     upgradeBody = "Upgrade to keep building — unlimited plans, saved forever, with Maker's Planner included.";
-  } else if (used > 0) {
-    upgradeHeadline = `${used} of ${monthlyLimit} projects used this month`;
-    upgradeBody = "Upgrade before you run out — unlimited plans, every project saved forever, Maker's Planner included.";
+  } else if (totalProjects > 0) {
+    upgradeHeadline = `You've created ${totalProjects} project${totalProjects === 1 ? "" : "s"} this month`;
+    upgradeBody = "Upgrade to keep generating unlimited custom plans, save every project, and unlock Maker's Planner.";
+  } else {
+    upgradeHeadline = "Go unlimited";
+    upgradeBody = "Upgrade to keep generating custom DIY plans and save every project forever.";
   }
 
   return (
