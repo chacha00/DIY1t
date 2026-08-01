@@ -7,6 +7,7 @@ import { WhyDiy1tV2 } from "@/components/landing/WhyDiy1tV2";
 import { DiyVisionSection } from "@/components/landing/DiyVisionSection";
 import { SocialProof } from "@/components/landing/SocialProof";
 import { PricingTeaser } from "@/components/landing/PricingTeaser";
+import { DemoSection } from "@/components/landing/DemoSection";
 import { FinalCtaV2 } from "@/components/landing/FinalCtaV2";
 
 export default function Home() {
@@ -16,6 +17,7 @@ export default function Home() {
       <main className="flex-1">
         <HeroV2 />
         <TrustedBy />
+        <DemoSection />
         <SavingsShowcase />
         <WhyDiy1tV2 />
         <DiyVisionSection />
