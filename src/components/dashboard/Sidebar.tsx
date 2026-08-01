@@ -70,7 +70,7 @@ export function Sidebar({ plan, creditsLeft, usedThisMonth, monthlyLimit, totalP
   let upgradeHeadline = "Go unlimited";
   let upgradeBody = "Upgrade to keep generating custom DIY plans and save every project forever.";
 
-  if (totalProjects >= 10) {
+  if (totalProjects >= 17) {
     upgradeHeadline = `You've created ${totalProjects} projects!`;
     upgradeBody = "Upgrade to keep generating unlimited custom plans, save every project, and unlock Maker's Planner.";
   } else if (used >= monthlyLimit) {
