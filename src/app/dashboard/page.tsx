@@ -239,7 +239,7 @@ export default async function DashboardPage() {
           </div>
           <div className="flex items-center gap-2 text-xs text-slate-600">
             <BarChart3 className="h-3.5 w-3.5 text-ds-emerald-500 shrink-0" />
-            <span><strong className="text-slate-800">{totalProjects}</strong> plans created</span>
+            <span><strong className="text-slate-800">{total}</strong> plans created</span>
           </div>
           <div className="flex items-center gap-2 text-xs text-slate-600">
             <CheckCircle2 className="h-3.5 w-3.5 text-ds-emerald-500 shrink-0" />
