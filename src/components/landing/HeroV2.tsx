@@ -76,14 +76,14 @@ export function HeroV2() {
             <div className="mt-8 flex flex-wrap gap-3">
               <Link
                 href="/register"
-                className="inline-flex items-center gap-2 rounded-2xl bg-brand-blue-600 px-6 py-3 text-sm font-bold text-white shadow-lg shadow-brand-blue-200 hover:bg-brand-blue-700 transition-all hover:-translate-y-0.5"
+                className="ds-btn-primary"
               >
                 Start Free
                 <ArrowRight className="h-4 w-4" />
               </Link>
               <Link
                 href="/#demo"
-                className="inline-flex items-center gap-2 rounded-2xl border border-slate-200 bg-white px-6 py-3 text-sm font-bold text-slate-700 hover:border-brand-blue-300 hover:text-brand-blue-600 transition-colors"
+                className="ds-btn-secondary"
               >
                 <Play className="h-4 w-4 text-brand-orange-500" />
                 Watch 60-Second Demo
@@ -113,7 +113,7 @@ export function HeroV2() {
                     key={i}
                     className={`flex items-center gap-3 rounded-xl px-4 py-2.5 transition-all duration-500 ${
                       i === activeStep
-                        ? "bg-brand-blue-50 border border-brand-blue-200 scale-[1.02]"
+                        ? "bg-ds-emerald-50 border border-ds-emerald-200 scale-[1.02]"
                         : i < activeStep
                         ? "opacity-60"
                         : "opacity-20"
@@ -136,7 +136,7 @@ export function HeroV2() {
               </div>
 
               {/* Savings reveal */}
-              <div className={`mt-4 rounded-2xl bg-gradient-to-br from-brand-teal-500 to-brand-blue-600 p-5 text-white transition-all duration-700 ${showSavings ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"}`}>
+              <div className={`mt-4 rounded-2xl p-5 text-white transition-all duration-700 ${showSavings ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"}`} style={{ background: "linear-gradient(135deg, var(--ds-emerald-500), var(--ds-emerald-700))" }}>
                 <div className="grid grid-cols-3 text-center">
                   <div>
                     <p className="text-xs font-medium text-white/70">Retail</p>

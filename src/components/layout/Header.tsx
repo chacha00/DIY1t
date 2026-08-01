@@ -26,7 +26,7 @@ export function Header() {
               <Hammer className="h-5 w-5 text-white" strokeWidth={2.5} />
             </span>
             <span className="text-xl font-extrabold tracking-tight text-slate-900">
-              DIY1T<span className="text-brand-orange-500">.</span>
+              DIY1T<span className="text-brand-blue-500">.</span>
             </span>
           </Link>
 
